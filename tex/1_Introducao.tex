@@ -1,0 +1,90 @@
+\label{cap:introducao}
+
+A \acrfull{IoT} é um paradigma para a construção de sistemas computacionais distribuídos pela Internet, nos quais, em princípio, os mais diversos dispositivos, objetos e coisas estarão conectados e interagindo com aplicativos para estender diversos serviços às pessoas \cite{Gubbi2013} \cite{Filho2017DesignNetworks}. A \acrshort{IoT} envolve um número crescente de dispositivos inteligentes interconectados e sensores que geralmente não são intrusivos, transparentes e invisíveis. A comunicação entre esses dispositivos deverá acontecer a qualquer hora e em qualquer lugar, tornando a comunicação descentralizada e complexa \cite{Rayes2017}.
+
+Ashton \cite{Kevin2009} propôs a \acrshort{IoT} para tratar seu uso na área de logística, utilizando \acrfull{RFID} para rastreamento de itens. A \acrshort{RFID} utiliza ondas de rádio para realizar a identificação de itens. Os itens são identificados em uma etiqueta com \acrshort{RFID} conhecida como tag, que pode ser rastreada em tempo real. As ondas de rádio da \acrshort{RFID} atuam em três regiões de frequência: \acrfull{LF}, \acrfull{HF}, e \acrfull{UHF} \cite{Bolic2010}, \cite{Li2016}.
+
+A computação em nuvem é um sistema distribuído e paralelo que consiste em uma coleção de computadores interconectados e virtualizados que são provisionados dinamicamente. As aplicações presentes na computação em nuvem são expostas como serviços sofisticados que podem ser acessados em uma rede \cite{Buyya2009}.
+
+Microsserviços são serviços pequenos e independentes que se comunicam entre si para formar aplicações que utilizam \acrfull{API} \cite{Dragoni2016}, \cite{Lewis2014}. Os microsserviços foram introduzidos no campo da aplicação de \acrshort{API} devido à sua flexibilidade, baixo acoplamento e escalabilidade, diferente das aplicações monolíticas, que se tornam muito maior em escala e com estrutura ainda mais complexa. A utilização de computação em nuvem na arquitetura de microsserviços é muito comum, devido à sua alta disponibilidade e extensibilidade, que permite provisionar microsserviços rapidamente \cite{Sun2017}.
+
+\newpage
+
+A leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} é uma atividade que pode gerar um grande volume de dados, em razão da utilização da frequência \acrshort{UHF}, elevando o custo final de um projeto que envolva esse tipo de arquitetura \cite{Prudanov2016}, \cite{Farris2017}, \cite{Chieochan2017}. A criação de uma arquitetura de \acrshort{IoT} para leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} com um leitor de tags \acrshort{RFID} de baixo custo, reduz o orçamento de um projeto que envolva esse tipo de arquitetura. A computação em nuvem e microsserviços permitem uma arquitetura escalável e flexível para o grande volume de dados que podem ser gerados na leitura de tags \acrshort{RFID}.
+
+Diante do exposto, este trabalho propõe uma arquitetura baseada em \acrlong{IoT} para leitura de tags \acrshort{RFID} de \acrlong{UHF}, utilizando computação em nuvem e microsserviços. Será apresentado um estudo de caso aplicando a arquitetura desenvolvida em um contexto real, para verificar a sua aderência e conformidade ao proposto.
+
+\section{Problema}
+
+A maior parte dos projetos envolvendo leitores de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} possuem um preço de mercado alto e podem gerar uma grande quantidade de leituras de tags \acrshort{RFID}, em decorrência da utilização da frequência \acrshort{UHF}.
+
+\section{Justificativa}
+
+A maior parte dos leitores de tags \acrshort{RFID} que utilizam a frequência \acrshort{UHF} possuem um preço de mercado alto, inviabilizando o seu uso para empresas de pequeno porte e/ou usuários comuns. Logo, é necessária a criação de uma arquitetura de \acrshort{IoT} para leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} com um leitor de tags \acrshort{RFID} de baixo custo em relação aos que utilizam essa frequência, a fim de reduzir o orçamento de um projeto que envolva esse tipo de arquitetura. A computação em nuvem e microsserviços permitem uma arquitetura escalável e flexível para o grande volume de dados que podem ser gerados na leitura de tags \acrshort{RFID} em virtude da utilização da frequência \acrshort{UHF}.
+
+\section{Objetivos}
+\label{sec:objetivos}
+
+\subsection{Objetivo Geral}
+
+O objetivo geral deste trabalho é desenvolver uma arquitetura de \acrshort{IoT} que envolva \textit{hardware} e \textit{software} e que seja capaz de coletar, processar e armazenar dados de leitura de tags \acrshort{RFID}, utilizando a frequência \acrshort{UHF} em um ambiente de computação em nuvem e microsserviços.
+
+\subsection{Objetivo Específico}
+
+Para atingir o objetivo geral, os seguintes objetivos específicos foram definidos:
+
+\begin{itemize}
+    \item Identificar na literatura os trabalhos acadêmicos abordando o tema;
+    \item Avaliar \textit{hardwares} de leitura de tags \acrshort{RFID} que utilizam a frequência \acrshort{UHF} disponíveis no mercado para o desenvolvimento da arquitetura proposta;
+    \item Implementar a comunicação do \textit{hardware} de \acrshort{IoT};
+    \item Implementar a arquitetura proposta utilizando um ambiente de computação em nuvem e microsserviços;
+    \item Realizar o monitoramento do \textit{hardware} de \acrshort{IoT};
+    \item Realizar o monitoramento dos microsserviços implementados;
+    \item Validar a arquitetura proposta aplicando a um estudo de caso real.
+\end{itemize}
+
+\section{Metodologia de Pesquisa}
+
+A pesquisa é o processo formal e sistemático de desenvolvimento do método científico. O objetivo fundamental da pesquisa é descobrir respostas para problemas mediante o emprego de procedimentos científicos \cite{Gil2008MetodosSocial}. 
+
+Podemos classificar as pesquisas de várias formas, conforme a busca de respostas para o problema encontrado \cite{Marconi2003FundamentosCientifica}. A \refFig{metodologia-pesquisa} apresenta o processo de classificação da pesquisa, assim como o processo de implementação definido neste trabalho.
+
+\figura[!ht]{introducao/metodologia_pesquisa.png}{Processo de metodologia de pesquisa}{metodologia-pesquisa}{width=1.0\textwidth}
+
+O processo descrito na \refFig{metodologia-pesquisa} começa com a identificação da pesquisa, sendo que a primeira tarefa consiste na identificação de sua natureza. Este trabalho faz uso da natureza de pesquisa aplicada e objetiva gerar conhecimentos para aplicação prática, que estão dirigidos à solução de problemas específicos \cite{Gil2008MetodosSocial}, \cite{Marconi2003FundamentosCientifica}. A arquitetura proposta neste trabalho faz uso dessa natureza de pesquisa.
+
+A próxima tarefa foi a definição da abordagem da pesquisa. Este trabalho faz uso da abordagem qualitativa, em que considera-se a existência de uma relação dinâmica entre o mundo real e o sujeito, isto é, um vínculo indissociável entre o mundo objetivo e a subjetividade do sujeito, que não pode ser traduzida em números \cite{Gil2008MetodosSocial}, \cite{Marconi2003FundamentosCientifica}. A abordagem qualitativa não requer o uso de métodos e técnicas estatísticas, e por isso, que não são utilizadas neste trabalho.
+
+Posteriormente, foi realizada a definição dos objetivos. Este trabalho faz uso do objetivo exploratório, que proporciona maior familiaridade com o problema, com vistas a torná-lo mais explícito ou a constituir hipóteses \cite{Gil2008MetodosSocial}, \cite{Marconi2003FundamentosCientifica}. Os objetivos deste trabalho são definidos na Seção \ref{sec:objetivos}.
+
+Por fim, foi realizada a definição dos meios de investigação. Este trabalho faz uso do meio de investigação bibliográfica, estudo que envolve levantamento bibliográfico com base na busca de trabalhos relacionados ao tema deste trabalho em bibliotecas digitais \cite{Gil2008MetodosSocial}, \cite{Marconi2003FundamentosCientifica}. Os trabalhos relacionados a este trabalho são compostos por 4 grandes áreas de pesquisas: \acrshort{IoT}, \acrshort{RFID}, computação em nuvem e microsserviços. São áreas de pesquisa que estão em constante transformação, tendo em vista a evolução quase recorrente nos últimos anos.
+
+Após a identificação da pesquisa, é descrito o processo de identificação da implementação da arquitetura proposta. A primeira tarefa consiste na definição do \textit{hardware} de \acrshort{IoT} para leitura de tags \acrshort{RFID} de \acrshort{UHF}. Com base no meio de investigação bibliográfica foi definido o \textit{hardware} adequado para implementação da arquitetura, respeitando os objetivos definidos na Seção \ref{sec:objetivos}.
+
+A próxima tarefa foi a implementação do \textit{software} responsável pela leitura de tags \acrshort{RFID} a partir do \textit{hardware} de \acrshort{IoT}, assim como a comunicação das informações geradas pela leitura de tags, utilizando computação em nuvem e microsserviços. A arquitetura proposta na parte de \textit{hardware} e \textit{software} está definida no Capítulo \ref{cap:desenvolvimento}.
+
+Por fim, foi realizado um estudo de caso, método de procedimento que constitui em etapas mais concretas da investigação \cite{Runeson2012CaseEngineering}. O estudo de caso se fez necessário para avaliar e validar a arquitetura proposta neste trabalho. 
+
+\section{Contribuições}
+
+As principais contribuições que pretendem-se obter a partir deste trabalho são:
+
+\begin{itemize}
+    \item Utilização de leitor de tags \acrshort{RFID} com frequência \acrshort{UHF} de baixo custo de mercado em relação aos que utilizam essa frequência;
+    \item Implementação de monitoramento do \textit{hardware} de \acrshort{IoT};
+    \item Utilização de computação em nuvem e microsserviços;
+    \item Implementação da arquitetura proposta aplicada em um estudo de caso real;
+    \item Disponibilização da implementação da arquitetura proposta para que outros pesquisadores possam se beneficiar da arquitetura desenvolvida, efetuando testes e adequando-a em outros contextos.
+\end{itemize}
+
+\section{Estrutura da Dissertação}
+
+Este trabalho está organizado em 4 Capítulos além deste: 
+
+\begin{itemize}
+    \item \textbf{Capítulo \ref{cap:fundamentacao} - Fundamentação Teórica:} Neste Capítulo são apresentadas a fundamentações teóricas e os trabalhos relacionados aos assuntos necessários para o entendimento deste trabalho;
+    \item \textbf{Capítulo \ref{cap:desenvolvimento} - Implementação:} Neste Capítulo é apresentada a implementação proposta para o desenvolvimento deste trabalho;
+    % \item \textbf{Capítulo \ref{cap:cronograma} - Cronograma:} Neste Capítulo é apresentado o cronograma de desenvolvimento deste trabalho;
+    \item \textbf{Capítulo \ref{cap:estudo-caso} - Estudo de Caso:} Neste Capítulo é apresentado um estudo de caso aplicando a arquitetura desenvolvida em um contexto real;
+    \item \textbf{Capítulo \ref{cap:conclusao} - Conclusão:} Neste Capítulo é apresentada a conclusão deste trabalho, bem como os trabalhos futuros.
+\end{itemize}

@@ -1,0 +1,648 @@
+\label{apendice}
+
+Abaixo é apresentado os repositórios onde estão localizados todos os códigos fontes implementados neste trabalho:
+
+\begin{itemize}
+    \item \textbf{\textit{Middleware} \acrshort{IoT}:} \url{https://github.com/yagoluiz/rfid-reader-middleware}
+    \item \textbf{Microsserviços e serviço \textit{Serverless}:} \url{https://github.com/yagoluiz/rfid-reader-api}
+    \item \textbf{Aplicação \textit{front-end}:} \url{https://github.com/yagoluiz/rfid-reader-web}
+\end{itemize}
+
+\section{Monitoramento da telemetria realizado pela placa RFID}
+
+\begin{lstlisting}[language={Java}, label=telemetria-placa]
+public class DeviceMessageSender implements Runnable {
+
+    @Override
+    public void run() {
+        try {
+            // Telemetria realizada de modo continuo
+            while (true) {
+                // Informacoes de telemetria:
+                // (IP, temperatura e status da conexao)
+                TelemetryModel telemetryModel = new TelemetryModel(
+                    InetAddress.getLocalHost().getHostAddress(),
+                    ReaderService.getTemperature(),
+                    TelemetryTypeEnum.TELEMETRY.getEnumValue(),
+                    ReaderService.isConnection());
+
+                // Informacoes de telemetria no formato JSON
+                String telemetryJson = new JsonUtil()
+                    .serialize(telemetryModel);
+                Message msg = new Message(telemetryJson);
+
+                // Informacoes de callback para biblioteca Iot Hub
+                Object lock = new Object();
+                DeviceEventCallback callback = new DeviceEventCallback();
+
+                // Envio das informacoes de telemetria:
+                // (JSON com informacoes e callback)
+                IoTHubService.sendEventDeviceAsync(msg, callback, lock);
+
+                // Sincronizacao das informacoes
+                synchronized (lock) {
+                    lock.wait();
+                }
+
+                System.out.println("Sending message Telemetry: "
+                    + telemetryJson);
+
+                // Telemetria realizada a cada 1 segundo
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException | UnknownHostException |
+            URISyntaxException | ReaderException e) {
+            System.out.println("Interrupted telemetry");
+            e.printStackTrace();
+        }
+    }
+
+    // Implementacao da biblioteca IoT Hub para envio de informacoes
+    public static class DeviceEventCallback implements IotHubEventCallback {
+        public void execute(IotHubStatusCode status, Object context) {
+            System.out.println("IoT Hub responded to message with status: "
+                + status.name());
+
+            if (context != null) {
+                synchronized (context) {
+                    context.notify(); // Sincronizacao de informacoes
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Leitura e log realizado pela placa RFID}
+
+\begin{lstlisting}[language={Java}, label=leitura-log-placa]
+public class ReaderMessageSender implements Runnable {
+
+    @Override
+    public void run() {
+        try {
+            TagReadData[] tagReads;
+            // Leitura realizada de modo continuo
+            while (true) {
+                // Leitura realizada a cada 1 segundo
+                Thread.sleep(1000);
+                // Limite de 10 tags lidas a cada 1 milissegundo
+                tagReads = ReaderService.readDataTag(10);
+                for (TagReadData tr : tagReads) {
+                    if (!tr.epcString().isEmpty()) {
+                    
+                        // Informacoes de leitura:
+                        // (IP, EPC, data e antena)
+                        ReadModel readModel = new ReadModel(
+                            InetAddress.getLocalHost().getHostAddress(),
+                            tr.epcString(),
+                            LocalDateTime.now().toString(),
+                            tr.getAntenna(),
+                            TelemetryTypeEnum.READ.getEnumValue());
+
+                        // Informacoes de leitura no formato JSON
+                        String readJson = new JsonUtil()
+                            .serialize(readModel);
+                        Message msg = new Message(readJson);
+
+                        // Informacoes de callback para biblioteca Iot Hub
+                        Object lock = new Object();
+                        DeviceMessageSender.DeviceEventCallback callback =
+                            new DeviceMessageSender.DeviceEventCallback();
+
+                        // Envio das informacoes de leitura:
+                        //(JSON com informacoes e callback)
+                        IoTHubService
+                            .sendEventDeviceAsync(msg, callback, lock);
+
+                        // Sincronizacao das informacoes
+                        synchronized (lock) {
+                            lock.wait();
+                        }
+
+                        System.out.println("Sending message Read: "
+                            + readJson);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            try {
+                // Informacoes de erro na leitura da placa RFID
+                synchronizeException(e);
+            } catch (URISyntaxException | UnknownHostException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+
+    private static void synchronizeException(Exception exception)
+        throws URISyntaxException, UnknownHostException {
+        // Informacoes de erro:
+        // (IP, nome do erro, pilha de erros e data)
+        LogModel logModel = new LogModel(
+                InetAddress.getLocalHost().getHostAddress(),
+                exception.getMessage(),
+                exception.getStackTrace().toString(),
+                LocalDateTime.now().toString(),
+                TelemetryTypeEnum.LOG.getEnumValue());
+
+        // Informacoes de erro no formato JSON
+        String logJson = new JsonUtil().serialize(logModel);
+        Message msg = new Message(logJson);
+
+        // Informacoes de callback para biblioteca Iot Hub
+        Object lock = new Object();
+        DeviceMessageSender.DeviceEventCallback callback = new DeviceMessageSender.DeviceEventCallback();
+
+        // Envio das informacoes de erro (JSON com informacoes e callback)
+        IoTHubService.sendEventDeviceAsync(msg, callback, lock);
+
+        System.out.println("Sending message Log: " + logJson);
+    }
+}
+\end{lstlisting}
+
+\section{\textit{Azure Functions} com informações providas do \textit{IoT Hub}}
+
+\begin{lstlisting}[language={[Sharp]C}, label=azure-functions]
+public static class IoTTriggerFunction
+{
+        [FunctionName("IoTTriggerFunction")]
+        public static async Task Run(
+            // Configuracao de escuta de mensagem via IoT Hub
+            [IoTHubTrigger("messages/events",
+            Connection = "IoTHubConnectionString",
+            ConsumerGroup = "$Default")]EventData[] events,
+            // Configuracao de banco de dados Cosmos DB para evento de telemetria
+            [CosmosDB(databaseName: "Rfid", collectionName: "Telemetry",
+            ConnectionStringSetting = "CosmosDBConnection")]
+            DocumentClient clientTelemetry,
+            // Configuracao de banco de dados Cosmos DB para evento de leitura
+            [CosmosDB(databaseName: "Rfid", collectionName: "Read",
+            ConnectionStringSetting = "CosmosDBConnection")]
+            DocumentClient clientRead,
+            // Configuracao de Blob Storage para evento de log
+            [Blob("logs", Connection = "BlobConnectionString")]
+            CloudBlobContainer blobContainer,
+            ILogger log)
+        {
+            log.LogInformation
+                ($"EventHubTriggerFunction executed: {DateTime.Now}");
+
+            // Listagem de mensagens do IoT Hub
+            foreach (EventData eventData in events)
+            {
+                // Informacoes da mensagem
+                var messageBody = Encoding.UTF8
+                    .GetString(eventData.Body.Array,
+                    eventData.Body.Offset,
+                    eventData.Body.Count);
+                    
+                // Informacao do tipo de mensagem:
+                // (Telemetria, leitura ou log)
+                var telemetryTypeModel = JsonConvert
+                    .DeserializeObject<TelemetryTypeModel>(messageBody);
+
+                log.LogInformation
+                    ($"EventHubTriggerFunction message: {messageBody}");
+                log.LogInformation
+                    ($"EventHubTriggerFunction telemetry type:
+                        {telemetryTypeModel.TelemetryType}");
+
+                // Envio de mensagem de acordo com o tipo
+                switch (telemetryTypeModel.TelemetryType)
+                {
+                    // Informacoes de telemetria (Cosmos BD)
+                    case (int)TelemetryTypeEnum.TELEMETRY:
+                        // Informacoes de telemetria
+                        var telemetryModel = JsonConvert
+                            .DeserializeObject<TelemetryModel>
+                            (messageBody);
+                        // Envio das informacoes de telemetria
+                        await clientTelemetry.CreateDocumentAsync
+                            (UriFactory.CreateDocumentCollectionUri
+                            ("Rfid", "Telemetry"), telemetryModel);
+                        break;
+                    // Informacoes de leitura (Cosmos BD)
+                    case (int)TelemetryTypeEnum.READ:
+                        // Informacoes de leitura
+                        var readModel = JsonConvert
+                            .DeserializeObject<ReadModel>(messageBody);
+                        // Envio das informacoes de leitura
+                        await clientRead.CreateDocumentAsync
+                            (UriFactory.CreateDocumentCollectionUri
+                            ("Rfid", "Read"), readModel);
+                        break;
+                    // Informacoes de log (Blob Storage)
+                    case (int)TelemetryTypeEnum.LOG:
+                        // Informacoes de log
+                        var logName = Guid.NewGuid().ToString();
+                        var cloudBlockBlob = blobContainer
+                            .GetBlockBlobReference($"{logName}.json");
+                        // Envio das informacoes de log
+                        await cloudBlockBlob.UploadTextAsync(messageBody);
+                        break;
+                        
+                    default:
+                        log.LogInformation
+                        ($"EventHubTriggerFunction telemetry type invalid: {telemetryTypeModel.TelemetryType}");
+                        break;
+                }
+
+                // Lista proxima mensagem apos o processamento da anterior
+                await Task.Yield();
+            }
+
+            log.LogInformation
+                ($"EventHubTriggerFunction finished: {DateTime.Now}");
+        }
+}
+\end{lstlisting}
+
+\section{Configuração de autenticação e autorização do cliente na \textit{API Gateway}}
+
+\begin{lstlisting}[language={[Sharp]C}, label=gateway-configuracao]
+public class Startup
+{
+    // Configuracao de variaveis de ambiente
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    // Variaveis de ambiente
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // Configuracao de autenticacao de cliente do API Gateway
+        void options(IdentityServerAuthenticationOptions identityServer)
+        {
+            identityServer.Authority = Configuration
+                .GetSection("IdentityServer:Authority").Value;
+            identityServer.ApiName = Configuration
+                .GetSection("IdentityServer:ApiName").Value;
+            identityServer.ApiSecret = Configuration
+                .GetSection("IdentityServer:ApiSecret").Value;
+            identityServer.SupportedTokens = SupportedTokens.Both;
+        }
+
+        // Configuracao de versao do framework ASP.NET Core
+        services.AddMvc()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        // Configuracao de CORS
+        services.AddCors();
+        // Configuracao de biblioteca Ocelot
+        services.AddOcelot(Configuration);
+        // Configuracao de autenticacao de cliente da API Gateway
+        services.AddAuthentication()
+        .AddIdentityServerAuthentication
+            (Configuration.GetSection("IdentityServer:ProviderKey")
+                .Value, options);
+    }
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+        // Configuracao de ambiente de desenvolvimento e producao
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseHsts();
+        }
+
+        // Configuracao utilizacao de HTTPS
+        app.UseHttpsRedirection();
+        // Configuracao de CORS para acesso aos endpoints
+        app.UseCors(x =>
+        {
+            x.AllowAnyOrigin();
+            x.AllowAnyHeader();
+            x.AllowAnyMethod();
+            x.AllowCredentials();
+        });
+        // Configuracao de biblioteca Ocelot
+        app.UseOcelot().Wait();
+    }
+}
+\end{lstlisting}
+
+\section{\textit{Endpoints} disponibilizados pela \textit{API Gateway}}
+
+\begin{lstlisting}[language=Java, label=gateway-endpoints]
+{
+  // Configuracao de endpoints
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/connect/token", // Endpoint microsservico de Identidade
+      "DownstreamScheme": "https", // Configuracao de HTTPS
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sso.api", // Local de hospedagem
+          "Port": 443 // Porta TCP
+        }
+      ],
+      "UpstreamPathTemplate": "/connect/token", // Endpoint API Gateway
+      "UpstreamHttpMethod": [ "Post" ] // Verbo HTTP
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/assets/read", // Endpoint microsservico de Ativo
+      "DownstreamScheme": "https", // Configuracao de HTTPS
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "asset.api", // Local de hospedagem
+          "Port": 443 // Porta TCP
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{version}/assets/read", // Endpoint API Gateway
+      "UpstreamHttpMethod": [ "Get" ], // Verbo HTTP
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "api_gateway", // Permissao de autenticacao do cliente
+        "AllowedScopes": [ "gateway" ] // Permissao de scopo
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/logs/limit/{limit}", // Endpoint microsservico de Log
+      "DownstreamScheme": "https", // Configuracao de HTTPS
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "log.api", // Local de hospedagem
+          "Port": 443 // Porta TCP
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{version}/logs/limit/{limit}", // Endpoint API Gateway
+      "UpstreamHttpMethod": [ "Get" ], // Verbo HTTP
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "api_gateway", // Permissao de autenticacao do cliente
+        "AllowedScopes": [ "gateway" ] // Permissao de scopo
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/reads/limit/{limit}", // Endpoint microsservico de Leitura
+      "DownstreamScheme": "https", // Configuracao de HTTPS
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "read.api", // Local de hospedagem
+          "Port": 443 // Porta TCP
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{version}/reads/limit/{limit}", // Endpoint API Gateway
+      "UpstreamHttpMethod": [ "Get" ], // Verbo HTTP
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "api_gateway", // Permissao de autenticacao do cliente
+        "AllowedScopes": [ "gateway" ] // Permissao de scopo
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{version}/telemetries/limit/{limit}", // Endpoint microsservico de Telemetria
+      "DownstreamScheme": "https", // Configuracao de HTTPS
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "telemetry.api", // Local de hospedagem
+          "Port": 443 // Porta TCP
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{version}/telemetries/limit/{limit}", // Endpoint API Gateway
+      "UpstreamHttpMethod": [ "Get" ], // Verbo HTTP
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "api_gateway", // Permissao de autenticacao do cliente
+        "AllowedScopes": [ "gateway" ] // Permissao de scopo
+      }
+    }
+  ],
+  "GlobalConfiguration": {}
+}
+\end{lstlisting}
+
+\section{Configuração da imagem \textit{Docker} do microsserviço de Ativo}
+
+\begin{lstlisting}[language=docker, label=docker-servicos]
+# Imagem do framework ASP.NET Core
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+# Restauracao e compilacao do projeto API
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
+WORKDIR /src
+COPY . .
+WORKDIR /src/services/asset/Asset.API
+RUN dotnet restore
+RUN dotnet build --no-restore -c Release -o /app
+
+# Publicacao do projeto compilado
+FROM build AS publish
+RUN dotnet publish --no-restore -c Release -o /app
+
+# Publicacao da imagem
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "Asset.API.dll"]
+\end{lstlisting}
+
+\section{Configuração da imagem \textit{Docker} da aplicação \textit{back-end}}
+
+\begin{lstlisting}[language=docker, label=docker-web]
+# Imagem do framework Node.js
+FROM node:latest as node
+
+# Execucao de comandos para instalacao
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm install node-sass
+RUN npm run build --prod
+
+# Publicacao da imagem
+FROM nginx:alpine
+COPY --from=node /app/dist/rfid-reader-web /usr/share/nginx/html
+\end{lstlisting}
+
+\section{Configuração das imagens \textit{Docker} dos microsserviços e da \textit{API Gateway} no arquivo \textit{Docker Compose}}
+
+\begin{lstlisting}[language=docker-compose-2, label=ci-docker-servicos]
+version: '3.4'
+
+# Configuracao das imagens dos microsservicos e da API Gateway
+services:
+# Configuracao da imagem da API Gateway
+  ocelot.api:
+    image: ${DOCKER_REGISTRY-}ocelotapi
+    build:
+      context: .
+      dockerfile: gateway/ocelot/Ocelot.API/Dockerfile
+# Configuracao da imagem do microsservico de Identidade
+  sso.api:
+    image: ${DOCKER_REGISTRY-}ssoapi
+    build:
+      context: .
+      dockerfile: security/sso/SSO.API/Dockerfile
+# Configuracao da imagem do microsservico de Ativo
+  asset.api:
+    image: ${DOCKER_REGISTRY-}assetapi
+    build:
+      context: .
+      dockerfile: services/asset/Asset.API/Dockerfile
+# Configuracao da imagem do microsservico de Log
+  log.api:
+    image: ${DOCKER_REGISTRY-}logapi
+    build:
+      context: .
+      dockerfile: services/log/Log.API/Dockerfile
+# Configuracao da imagem do microsservico de Leitura
+  read.api:
+    image: ${DOCKER_REGISTRY-}readapi
+    build:
+      context: .
+      dockerfile: services/read/Read.API/Dockerfile
+# Configuracao da imagem do microsservico de Telemetria
+  telemetry.api:
+    image: ${DOCKER_REGISTRY-}telemetryapi
+    build:
+      context: .
+      dockerfile: services/telemetry/Telemetry.API/Dockerfile
+\end{lstlisting}
+
+\section{Configuração de integração contínua dos microsserviços e serviços \textit{Serverless}}
+
+\begin{lstlisting}[language=docker-compose, label=ci-yaml-servicos]
+# Branch na qual a integracao continua sera inicializada
+trigger:
+  branches:
+    include:
+    - master
+
+# Maquina virtual onde sera realizada a integracao continua
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Repositorio atual do arquivo yaml
+resources:
+- repo: self
+
+# Variaveis de ambiente para a etapa de steps
+variables:
+  buildConfiguration: 'Release'
+  restoreBuildProjectFunction: '**/IoT.Function.Trigger.csproj'
+  restoreBuildProjectFunctionTest: '**/IoT.Function.Trigger.*[Tt]ests/*.csproj'
+  azureSubscriptionEndpoint: azure-resource
+  azureContainerRegistry: rfidregistry.azurecr.io
+
+# Etapa de complicacao e restauracao dos projetos (Serverless e containers)
+steps:
+# Restauracao do projeto Azure Function
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '$(restoreBuildProjectFunction)'
+
+# Compilacao do projeto Azure Function
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '$(restoreBuildProjectFunction)'
+    arguments: '--configuration $(BuildConfiguration)'
+
+# Execucao de testes do projeto Azure Function
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '$(restoreBuildProjectFunctionTest)'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+# Compilacao para arquivo ZIP do projeto Azure Function
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    projects: '$(restoreBuildProjectFunction)'
+    publishWebProjects: false
+    modifyOutputPath: true
+    zipAfterPublish: true
+
+# Publicacao no arquivo ZIP do projeto Azure Function
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+
+# Compilacao dos projetos em containers
+- task: DockerCompose@0
+  displayName: Build services
+  inputs:
+    action: Build services
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    dockerComposeFile: '**/docker-compose.yml'
+    projectName: $(Build.Repository.Name)
+    qualifyImageNames: true
+    includeLatestTag: true
+    additionalImageTags: $(Build.BuildId)
+
+# Publicacao dos projetos em containers
+- task: DockerCompose@0
+  displayName: Push services
+  inputs:
+    action: Push services
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    dockerComposeFile: '**/docker-compose.yml'
+    projectName: $(Build.Repository.Name)
+    qualifyImageNames: true
+    includeLatestTag: true
+    additionalImageTags: $(Build.BuildId)
+\end{lstlisting}
+
+\section{Configuração de integração contínua da aplicação \textit{front-end}}
+
+\begin{lstlisting}[language=docker-compose, label=ci-yaml-web]
+# Branch na qual a integracao continua sera inicializada
+trigger:
+  branches:
+    include:
+    - master
+
+# Maquina virtual onde sera realizada a integracao continua
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Repositorio atual do arquivo yaml
+resources:
+- repo: self
+
+# Variaveis de ambiente para a etapa de steps
+variables:
+  azureSubscriptionEndpoint: azure-resource
+  azureContainerRegistry: rfidregistry.azurecr.io
+  imageName: rfidreaderweb
+
+# Etapa de complicacao e restauracao do projeto em container
+steps:
+# Compilacao do projeto em container
+- task: Docker@1
+  displayName: 'Build an image'
+  inputs:
+    command: build
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    imageName: $(imageName)
+    includeLatestTag: true
+
+# Publicacao do projeto em container
+- task: Docker@1
+  displayName: 'Push an image'
+  inputs:
+    command: push
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    imageName: $(imageName)
+    includeLatestTag: true
+\end{lstlisting}

@@ -1,0 +1,25 @@
+\label{cap:conclusao}
+
+Neste trabalho, foi apresentada uma arquitetura que implementa a leitura de tags \acrshort{RFID}, utilizando a frequência \acrshort{UHF} com um leitor de tags de baixo custo de mercado em relação aos que utilizam essa frequência, em uma infraestrutura composta por computação em nuvem e microsserviços. A utilização da placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} foi utilizada para redução do custo do equipamento de leitura de tags \acrshort{RFID} com frequência \acrshort{UHF}.
+
+A metodologia de pesquisa utilizada neste trabalho contribuiu para a construção da arquitetura proposta. A pesquisa bibliográfica e os trabalhos relacionados foram importantes para o desenvolvimento da arquitetura proposta neste trabalho. A implementação da arquitetura proposta seguindo o padrão de \acrlong{IoT} apresentado pela pesquisa bibliográfica e os trabalhos relacionados, se mostraram um facilitador para o desenvolvimento da arquitetura. A divisão arquitetural em dois grandes grupos (Grupo de \acrlong{IoT} e Grupo de Serviços) foi um facilitador para implementação da arquitetura proposta seguindo padrão de \acrlong{IoT}.
+
+A arquitetura proposta foi aplicada em um estudo de caso real para verificar a sua aderência e conformidade neste trabalho. Os resultados apresentados demonstraram a importância da utilização da computação em nuvem e seus serviços oferecidos para a arquitetura proposta. A utilização de microsserviços foi outro facilitador dentro da arquitetura proposta, sendo importante nos resultados obtidos. Os testes de performance realizados validaram as decisões arquiteturais propostas no trabalho.
+
+A utilização de computação em nuvem e microsserviços demonstraram ter um custo alto de desenvolvimento na arquitetura proposta, em decorrência de suas complexidades e da quantidade de recursos criados para implementação da arquitetura.
+
+Para a leitura de tags \acrshort{RFID} foi identificado que, em cenários onde a distância de leitura é um requisito fundamental, é necessário incluir uma antena externa para obter melhores resultados nesse quesito.
+
+\section{Trabalhos Futuros}
+
+Como trabalhos futuros, são propostos alguns pontos que podem ser evoluídos, testados e implementados na arquitetura proposta.
+
+Na Camada de \textit{Middleware}, avaliar outros dispositivos de \textit{hardwares} como microcontroladores ou microcomputadores para realizar a função do servidor local. Na Camada de Rede, avaliar outros tipos de comunicação diferentes da implementada na arquitetura proposta. Na arquitetura de serviços, avaliar outros tipos de orquestradores de \textit{containers} como o \textit{Kubernetes}.
+
+Existe a necessidade de um estudo mais profundo de segurança, na leitura de leitor de tags \acrshort{RFID}, sobretudo na placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}. As tags \acrshort{RFID} possuem alguns mecanismos de segurança como inserção de senha para leitura e/ou gravação e até possibilidade de bloquear a tag \acrshort{RFID}, não sendo mais possível fazer nenhum tipo de ação sobre a tag \acrshort{RFID}.
+
+Por fim, realizar outros experimentos práticos para avaliar o uso da arquitetura proposta em outros contextos relacionados à utilização de \acrshort{IoT} e leitura de tags \acrshort{RFID}.
+
+\section{Publicações Relacionadas}
+
+Santos, Yago Luiz dos e Edna Dias Canedo: On the Design and Implementation of an IoT Based Architecture for Reading Ultra High Frequency Tags. Information, 10(2), 2019, ISSN 2078-2489. \textit{http://www.mdpi.com/2078-2489/10/2/41}.

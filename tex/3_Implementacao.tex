@@ -1,0 +1,310 @@
+\label{cap:desenvolvimento}
+
+Este Capítulo apresenta a arquitetura proposta neste trabalho. A Seção \ref{sec:arquitetura-proposta} apresenta a arquitetura proposta de maneira abstrata, definindo as camadas da arquitetura, suas utilidades e relações. A Seção \ref{sec:grupo-iot} apresenta com detalhes a arquitetura de \acrlong{IoT}, definindo o dispositivo \acrshort{IoT} utilizado para leitura de tags \acrshort{RFID} e o funcionamento da arquitetura de \acrlong{IoT}. A Seção \ref{sec:grupo-serviços} apresenta com detalhes a arquitetura de serviços, definindo como os microsserviços e a computação em nuvem são providos na arquitetura.
+
+\section{Arquitetura Proposta}
+\label{sec:arquitetura-proposta}
+
+A arquitetura abstrata proposta neste trabalho tem como objetivo o gerenciamento do dispositivo de \acrshort{IoT} de leitura de tags \acrshort{RFID}, assim como a disponibilização dos dados utilizando serviços providos de microsserviços e computação em nuvem. A arquitetura proposta é implementada de acordo com a arquitetura padrão em \acrlong{IoT}, conforme descrito na Seção \ref{sec:iot}. A \refFig{arquitetura-abstrata} é composta por cinco camadas: Camada de Percepção, Camada de Rede, Camada de \textit{Middleware}, Camada de Aplicação e Camada de Negócio.
+ 
+\begin{enumerate}
+    \item \textbf{Camada de Percepção:} responsável pela identificação e coleta de informações do dispositivo de \acrshort{IoT} de leitura de tags \acrshort{RFID};
+    \item \textbf{Camada de Rede:} responsável pela transmissão dos dados gerados pelo dispositivo de \acrshort{IoT} e sua comunicação com um servidor local;
+    \item \textbf{Camada de \textit{Middleware}:} responsável pelo processamento, gerenciamento e armazenamento dos dados gerados pelo dispositivo de \acrshort{IoT};
+    \item \textbf{Camada de Aplicação:} responsável pela disponibilização dos dados gerados pelo dispositivo de \acrshort{IoT};
+    \item \textbf{Camada de Negócio:} responsável pela apresentação dos dados gerados pelo dispositivo de \acrshort{IoT} para interação com o usuário.
+\end{enumerate}
+
+\figura[!ht]{implementacao/arquitetura_abstrata.png}{Arquitetura abstrata da solução proposta}{arquitetura-abstrata}{width=0.80\textwidth}
+
+A Camada de Percepção consiste em identificar e coletar as informações do dispositivo de \acrshort{IoT} de leitura de tags \acrshort{RFID}. O dispositivo \acrshort{IoT} possui dois tipos de eventos em sua comunicação: evento de leitura e evento de log. O evento de leitura ocorre quando a leitura de uma tag é realizada, já o evento de log, quando ocorrer algum erro na leitura de uma tag. Um terceiro evento é responsável pelo monitoramento da telemetria do dispositivo \acrshort{IoT}. O evento de monitoramento é responsável por enviar informações sobre o estado do dispositivo \acrshort{IoT}. A cada evento realizado pelo dispositivo \acrshort{IoT}, os dados gerados são processados na Camada de Rede.
+
+A Camada de Rede consiste em transmitir os dados gerados pelo dispositivo de \acrshort{IoT}, além de realizar a comunicação com um servidor local. Os dados gerados nos eventos de leitura e de log realizados no dispositivo \acrshort{IoT}, além do evento de monitoramento da telemetria, são enviados para a Camada de \textit{Middleware}.
+
+A Camada de \textit{Middleware} consiste no processamento, gerenciamento e armazenamento dos dados gerados pelo dispositivo de \acrshort{IoT}. Os dados gerados pelo dispositivo de \acrshort{IoT} no evento de leitura e de log, além do evento de monitoramento da telemetria, são processados e armazenados em um banco de dados \acrfull{NoSQL} pelo grande volume de informações que podem ser geradas, assim como pela necessidade de alta disponibilidade e escalabilidade da arquitetura.
+
+A Camada de Aplicação consiste em disponibilizar serviços utilizando o padrão de microsserviços com a utilização de computação em nuvem. O uso de microsserviços e computação em nuvem possuem características que são essenciais para o gerenciamento de grandes arquiteturas em \acrlong{IoT}. Esta camada expõe as informações armazenadas na Camada de \textit{Middleware}, para que possam ser utilizadas na Camada de Negócio.
+
+A Camada de Negócio consiste na visualização das informações providas pelos serviços da Camada de Aplicação que expõem as informações do dispositivo de \acrshort{IoT}.
+
+A arquitetura proposta, além de ser representada por cinco camadas, é dividida em dois grandes grupos: Grupo de \acrlong{IoT} e Grupo de Serviços.
+
+\begin{enumerate}
+    \item \textbf{Grupo de \acrlong{IoT}:} composto pela Camada de Percepção e Camada de Rede;
+    \item \textbf{Grupo de Serviços:} composto pela Camada de Aplicação e Camada de Negócio.
+\end{enumerate}
+
+A Camada de \textit{Middleware} é compartilhada entre os dois grupos da arquitetura. A separação arquitetural em camadas e em grupos se faz necessária para melhor utilização do hardware, descentralização do gerenciamento e armazenamento dos dados, e principalmente pelo processamento dos dados gerados pelo dispositivo de \acrshort{IoT}.
+
+As Seções seguintes trazem uma visão detalhada do funcionamento da arquitetura. Os grupos presentes na arquitetura são detalhados dentro das camadas da arquitetura.
+
+\section{Grupo de Internet das Coisas}
+\label{sec:grupo-iot}
+
+O Grupo de \acrlong{IoT} é composto pela Camada de Percepção e Camada de Rede, além de ser responsável por enviar as informações geradas pelo dispositivo de \acrshort{IoT} para a Camada de \textit{Middleware}. Para realizar a leitura de tags \acrshort{RFID}, a arquitetura proposta utiliza a placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}\footnote{\emph{\href{https://www.sparkfun.com/products/14066?_ga=2.72983187.1285336078.1513642010-752141075.1513642010}{SparkFun Simultaneous RFID Reader - M6E}}}, apresentada na \refFig{sparkfun-rfid}, como dispositivo de \acrshort{IoT} de leitura de tags \acrshort{RFID}.
+
+A escolha desse dispositivo deve-se pelos seguintes fatores: baixo custo de mercado em relação aos leitores de tags \acrshort{RFID} convencionais que utilizam a frequência \acrshort{UHF}, possibilidade de utilizar antena interna presente na placa ou antena externa a ser acoplada e integração com \acrshort{SDK} presente na placa, sendo possível utilizar as linguagens de programação C, C\# ou Java.
+
+A placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} realiza a função da Camada de Percepção, com a leitura de tags \acrshort{RFID} a partir de sua antena interna localizada na parte superior da placa. Neste trabalho é utilizada a etiqueta passiva e a frequência \acrshort{UHF}, respectivamente, dado que o custo é menor do que em outros tipos de tags, e ao alcance de distância de leitura das tags \acrshort{RFID} é mais alto.
+
+\figura[!ht]{implementacao/sparkfun_rfid}{\textit{SparkFun Simultaneous RFID Reader - M6E Nano}}{sparkfun-rfid}{width=0.50\textwidth}
+
+A \refFig{arquitetura-iot} apresenta a arquitetura do Grupo de \acrlong{IoT} responsável pela leitura e comunicação do dispositivo de \acrshort{IoT}, seu processamento em relação aos eventos de leitura e log, além do evento de monitoramento da telemetria e do armazenamento dos dados em um banco de dados \acrshort{NoSQL} utilizando um ambiente de computação em nuvem.
+
+\figura[!ht]{implementacao/arquitetura_iot.png}{Arquitetura do Grupo de \acrlong{IoT}}{arquitetura-iot}{width=1.05\textwidth}
+
+A comunicação da placa é realizada com um adaptador para a comunicação serial utilizando um \textit{hardware} \acrfull{UART}. A comunicação serial é uma das comunicações disponíveis na placa. Esta comunicação da placa realiza a função da Camada de Rede. Esse tipo de comunicação é necessária para não envolver outro tipo de \textit{hardware} como um microcontrolador ou microcomputador para comunicação com a placa. Com a comunicação serial é possível se conectar com qualquer um desses \textit{hardware} de maneira transparente. A comunicação é realizada em um servidor hospedado localmente, assim, é possível se conectar utilizando uma porta \acrfull{USB} do servidor local. Esta conexão poderia ser realizada em um microcontrolador ou microcomputador da mesma forma, ou, ainda, utilizando outro tipo de comunicação presente na Camada de Rede.
+
+O servidor local é responsável pelo processamento dos dados gerados pela placa. O servidor local utilizado possui as seguintes configurações:
+
+\newpage
+
+\begin{itemize}
+    \item \textbf{Sistema Operacional:} \textit{Windows} 10;
+    \item \textbf{Memória RAM}: 16 \textit{Gigabytes};
+    \item \textbf{Processador:} Intel Core(TM) i7 6500U/2.50\acrfull{GHz};
+    \item \textbf{Placa de Vídeo:} 4 \textit{Gigabytes};
+    \item \textbf{Disco Rígido:} SSD Samsung 500 \textit{Gigabytes}/520 \textit{Megabytes} (escrita e leitura).
+\end{itemize}
+
+O servidor local possui um software desenvolvido na linguagem de programação Java. A utilização da linguagem de programação Java deve-se à interoperabilidade da linguagem em qualquer \acrfull{SO}. Nesse contexto, o servidor local utilizado poderia ter qualquer \acrshort{SO}. Esse software é responsável por processar as informações dos eventos de leitura e log que ocorrem na placa, além de realizar o monitoramento da telemetria.
+
+Os eventos de leitura e log realizados pela placa, além do monitoramento da telemetria, são processados de maneira assíncrona, dessa forma, nenhum evento necessita esperar algum evento finalizar para continuar. Os eventos podem ocorrer de forma simultânea, sem que ocorra algum gargalo no processamento das requisições dos eventos.
+
+O processamento dos eventos de leitura, log e monitoramento da telemetria da placa são enviados no formato de arquivo \acrfull{JSON} para o \textit{Gateway} de \acrshort{IoT} \textit{IoT Hub}, serviço oferecido pelo \textit{Microsoft Azure}. O \textit{IoT Hub} é um serviço que permite o consumo de grandes volumes de dados de dispositivos \acrshort{IoT}, além de todo o gerenciamento de dispositivos pela nuvem. O \textit{IoT Hub} é um serviço compatível com as principais linguagens de programação e protocolos de comunicação. Uma das linguagens de programação oferecidas no serviço é a linguagem Java, implementada no servidor local para processamento dos eventos da arquitetura. O \textit{IoT Hub} realiza a função da Camada de \textit{Middleware}, sendo responsável pelo processamento e armazenamento dos dados gerados pela placa.
+
+O Apêndice \ref{telemetria-placa} apresenta a implementação do evento de monitoramento da telemetria realizado pela placa \acrshort{RFID} e o Apêndice \ref{leitura-log-placa} apresenta a implementação dos eventos de leitura e log realizados pela placa \acrshort{RFID}.
+
+As seguintes informações de telemetria são enviadas para o \textit{IoT Hub} nesta arquitetura: temperatura, localização e conectividade intermitente. O monitoramento da temperatura é importante para acompanhar o aquecimento da placa em possíveis picos de leitura de tags \acrshort{RFID} ou para verificar algum aquecimento excessivo na placa a qualquer momento. A localização é importante para que placa possa ser monitorada e gerenciada de forma remota. A verificação de conectividade intermitente da placa é a função mais importante nesse tipo de serviço, sendo possível saber se a placa possui algum comportamento não esperado e se a placa encontra-se em funcionamento constante. Além do monitoramento da telemetria geradas pela placa, a utilização desse tipo de serviço é importante para a alta disponibilidade e escalabilidade da arquitetura, onde outros dispositivos podem ser conectados à arquitetura e serem monitorados e gerenciados.
+
+O armazenamento dos dados gerados dos eventos de leitura, log e monitoramento da telemetria da placa ocorrem quando alguma dessas informações são enviadas para o \textit{IoT Hub}. Um serviço da \textit{Microsoft Azure} que utiliza a arquitetura de \textit{Serverless}, \textit{Azure Functions} é responsável por "escutar" os dados enviados para o \textit{IoT Hub}. O \textit{Azure Functions} está implementado na linguagem de programação C\#. O \textit{Azure Functions} fica hospedada no \textit{Microsoft Azure} em \textit{background}, sendo acionada apenas quando há alguma informação enviada para o \textit{IoT Hub}.
+
+O Apêndice \ref{azure-functions} apresenta a implementação do \textit{Azure Functions}. Quando o \textit{Azure Functions} é acionado, o mesmo verifica qual tipo de evento foi invocado: leitura ou telemetria, que são realizados pela placa, ou log. Cada um desses eventos são armazenados em seus respectivos repositórios definidos na arquitetura.
+
+A utilização desse tipo de arquitetura \textit{Serverless} se faz necessária pelo contexto de funcionamento em \textit{background} desse tipo de serviço na arquitetura, além de ser importante para resiliência no envio dos dados, tornando a arquitetura escalonável e menos sensível a falhas individuais de outros componentes da arquitetura.
+
+O banco de dados \acrshort{NoSQL} utilizado para armazenamento dos eventos de leitura e monitoramento da telemetria da placa é um serviço do \textit{Microsoft Azure}, \textit{Cosmos DB}. O \textit{Cosmos DB} é um banco de dados multimodelo globalmente distribuído que dá suporte a bancos de dados de documentos, valor-chave, coluna e grafo. Neste trabalho é utilizado o banco de dados orientado a documentos. Esse tipo de banco de dados foi escolhido por ser ideal para obter baixa latência, alta disponibilidade e por possuir um esquema de dados flexível.
+
+As informações de log geradas são armazenadas em um \textit{Blob Storage}, serviço oferecido pelo \textit{Microsoft Azure} e específico para armazenamento do tipo de arquivo \acrfull{BLOB}. O tipo de arquivo \acrshort{BLOB} é uma coleção de dados binários que são armazenados como uma única entidade. É uma coleção de dados ideal para armazenar qualquer tipo de dado não estruturado. Caso aconteça alguma mudança no formato do arquivo \acrshort{JSON} do log, não é necessário nenhuma adequação no armazenamento desse tipo de arquivo.
+
+Os dados armazenados dos eventos de leitura e monitoramento da telemetria da placa no \textit{Cosmos DB} e os dados de log armazenadas no \textit{Blob Storage} são acessados pelo Grupo de Serviços, responsáveis pela disponibilização dessas informações utilizando microsserviços e computação em nuvem.
+
+\section{Grupo de Serviços}
+\label{sec:grupo-serviços}
+
+O Grupo de Serviços é composto pela Camada de Aplicação e Camada de Negócio, além de ser responsável por se comunicar com as informações armazenadas na Camada de \textit{Middleware}. A Camada de Aplicação consiste em disponibilizar serviços providos de microsserviços e computação em nuvem. Esses serviços são consumidos na Camada de Negócio para exposição das informações. A \refFig{arquitetura-microsservicos} apresenta a arquitetura do Grupo de Serviços utilizando microsserviços em um ambiente de computação em nuvem.
+
+\figura[!ht]{implementacao/arquitetura_microsservicos.png}{Arquitetura do Grupo de Serviços}{arquitetura-microsservicos}{width=1.0\textwidth}
+
+O Grupo de Serviços é composto por cinco microsserviços: microsserviço de Ativo, microsserviço de Leitura, microsserviço de Telemetria, microsserviço de Log e microsserviço de Identidade. Os microsserviços foram implementados utilizando o \textit{framework} Web \textit{ASP.NET Core}, na linguagem de programação C\#. Cada \acrfull{API} do microsserviço é implementado utilizando o estilo arquitetural \acrfull{REST} com o retorno da resposta dos \textit{endpoints} no formato \acrshort{JSON}.
+
+\newpage
+
+\subsection{Microsserviço de Ativo}
+
+O microsserviço de Ativo é responsável por disponibilizar as informações de objetos físicos que são identificados com uma tag \acrshort{RFID}. Os dados do microsserviço de Ativo são armazenados no banco de dados \textit{SQL Server}, hospedado no \textit{Microsoft Azure}. Neste trabalho é utilizado um banco de dados relacional, por ser um tipo de banco de dados comum para armazenamento de informações. O armazenamento dos dados poderia utilizar qualquer outro tipo de banco de dados. A \refFig{mer-ativo} apresenta o modelo conceitual do banco de dados do microsserviço de Ativos que foi criado a partir do mapeamento das principais informações necessárias para identificação de um objeto físico.
+
+\figura[!ht]{implementacao/mer_ativo.png}{Modelo conceitual do microsserviço de Ativo}{mer-ativo}{width=0.9\textwidth}
+
+O modelo conceitual do banco de dados é composto por três entidades físicas:
+
+\begin{itemize}
+    \item \textbf{Ativo:} Representa o objeto físico identificado com uma tag \acrshort{RFID};
+    \item \textbf{Local:} Representa a localidade do objeto físico. Podendo ser uma garagem, portaria, escritório, entre outras localidades;
+    \item \textbf{Tipo:} Representa o tipo do objeto físico. Podendo ser um equipamento eletrônico, um móvel físico, entre outros tipos.
+\end{itemize}
+
+\newpage
+
+As Tabelas \ref{tab:mer-ativo}, \ref{tab:mer-ativo-local} e \ref{tab:mer-ativo-tipo} apresentam as descrição dos atributos e dos tipos de dados presentes no modelo conceitual do banco de dados microsserviço de Ativo.
+
+\begin{table}[htb!]
+\caption{Descrição dos atributos e tipo de dados da entidade Ativo.}
+\label{tab:mer-ativo}
+\begin{tabular}
+{| c | c | p{9cm} |}
+\hline 
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Descrição} \\ \hline
+Id & Numérico & Identificador da entidade. \\ \hline
+LocalId & Numérico & Identificador de relacionamento com a entidade Local. \\ \hline
+TipoId & Numérico & Identificador de relacionamento com a entidade Tipo. \\ \hline
+Nome & Texto & Nome do objeto físico vinculado com a tag \acrshort{RFID}. \\ \hline
+NumeroIdentificador & Texto & Número de identificação do objeto físico. \\ \hline
+NumeroSerial & Texto & Número de série de acordo com o fabricante do objeto físico. \\ \hline
+Epc & Texto & Código único da tag \acrshort{RFID} vinculada ao objeto físico.\\ \hline
+Situacao & Booleano & Apresenta se o objeto físico ainda está sendo monitorado. \\ \hline
+DataCriacao & Data & Data de criação do vínculo do objeto físico com a tag \acrshort{RFID}. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[htb!]
+\caption{Descrição dos atributos e tipo de dados da entidade Local.}
+\label{tab:mer-ativo-local}
+\begin{tabular}
+{| c | c | p{10.9cm} |}
+\hline 
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Descrição} \\ \hline
+Id & Numérico & Identificador da entidade. \\ \hline
+Nome & Texto & Nome do local onde o objeto físico foi vinculado. \\ \hline
+Descricao & Texto & Descrição do local onde o objeto físico foi vinculado. \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htb!]
+\caption{Descrição dos atributos e tipo de dados da entidade Tipo.}
+\label{tab:mer-ativo-tipo}
+\begin{tabular}
+{| c | c | p{10.9cm} |}
+\hline 
+\textbf{Atributo} & \textbf{Tipo} & \textbf{Descrição} \\ \hline
+Id & Numérico & Identificador da entidade. \\ \hline
+Nome & Texto & Nome do local onde o objeto físico foi vinculado. \\ \hline
+\end{tabular}
+\end{table}
+
+O código fonte \ref{json-ativo} apresenta o retorno em \acrshort{JSON} do objeto físico identificado pela placa \acrshort{RFID} presente no microsserviço de Ativo. O atributo \textit{"id"} representa o identificador único de leitura de um objeto físico, o atributo \textit{"ativo"} representa o nome do objeto físico identificado, o atributo \textit{"tipo"} representa o tipo do objeto físico identificado, o atributo \textit{"local"} representa o local onde o objeto físico foi identificado, e por fim, o atributo \textit{"epc"} representa o código único da tag \acrshort{RFID}:
+
+\begin{lstlisting}[language=Java, caption={JSON de resposta do microsserviço de Ativo.}, label=json-ativo]
+{
+    "id": "72f9fcdb-1fe7-490b-93ed-c0ec61868167",
+    "ativo": "Computador",
+    "local": "Garagem",
+    "tipo": "Eletronico",
+    "epc": "494E44553030303030613133"
+}
+\end{lstlisting}
+
+\subsection{Microsserviço de Leitura}
+
+O microsserviço de Leitura é responsável por disponibilizar as informações de leituras de tags \acrshort{RFID}. O código fonte \ref{json-leitura} apresenta o retorno em \acrshort{JSON} de um objeto físico com tag \acrshort{RFID} presente no microsserviço de Leitura. O atributo \textit{"id"} representa o identificador único de leitura de um objeto físico, o atributo \textit{"ip"} representa o número de protocolo de rede do servidor local, o atributo \textit{"epc"} representa o código único da tag \acrshort{RFID}, o atributo \textit{"antena"} representa o número da antena da placa \acrshort{RFID} que realizou a leitura, e por fim, o atributo \textit{"dataLeitura"} representa a data de leitura que a tag \acrshort{RFID} foi identificada:
+
+\newpage
+
+\begin{lstlisting}[language=Java, caption={JSON de resposta do microsserviço de Leitura.}, label=json-leitura]
+{
+    "id": "7cca1259-ed23-43a9-b5d2-11c475871df1",
+    "ip": "10.0.75.1",
+    "epc": "E2002083980201001070A87F",
+    "dataLeitura": "2019-03-06T14:13:55.037",
+    "antena": 1
+}
+\end{lstlisting}
+
+\subsection{Microsserviço de Telemetria}
+
+O microsserviço de Telemetria é responsável por disponibilizar as informações de telemetria da placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}. Conforme apresentado na arquitetura do Grupo de \acrlong{IoT}, os dados desses microsserviços são armazenados no banco de dados \acrshort{NoSQL} \textit{Cosmos DB} e hospedado no \textit{Microsoft Azure}.
+
+O código fonte \ref{json-telemetria} apresenta o retorno em \acrshort{JSON} do monitoramento da telemetria da placa \acrshort{RFID} presente no microsserviço de Telemetria. O atributo \textit{"id"} representa o identificador único de leitura de um objeto físico, o atributo \textit{"ip"} representa o número de protocolo de rede do servidor local, o atributo \textit{"temperatura"} representa a temperatura da placa \acrshort{RFID}, e por fim, o atributo \textit{"conexao"} representa o estado de conexão da placa \acrshort{RFID}:
+
+\begin{lstlisting}[language=Java, caption={JSON de resposta do microsserviço de Telemetria.}, label=json-telemetria]
+{
+    "id": "4a31fc92-9780-4e9d-9c0f-aac2faa3d085",
+    "ip": "10.0.75.1",
+    "temperatura": 45,
+    "conexao": true
+}
+\end{lstlisting}
+
+\subsection{Microsserviço de Log}
+
+O microsserviço de Log é responsável por disponibilizar as informações de erros que podem ocorrer na leitura de tags \acrshort{RFID}. Conforme apresentado na arquitetura do Grupo de \acrlong{IoT}, os dados desse microsserviço são armazenados em um \textit{Blob Storage}, hospedado no \textit{Microsoft Azure} no formato de arquivo \acrshort{BLOB}. 
+
+O código fonte \ref{json-log} apresenta o retorno em \acrshort{JSON} do log da placa \acrshort{RFID} presente no microsserviço de Log. O atributo \textit{"id"} representa o identificador único de leitura de um objeto físico, o atributo \textit{"ip"} representa o número de protocolo de rede do servidor local, o atributo \textit{"excecao"} representa o nome da exceção ocorrida na placa \acrshort{RFID}, o atributo \textit{"dataExcecao"} representa a data que ocorreu o erro na placa \acrshort{RFID}, e por fim, o atributo \textit{"stackTrace"} representa a pilha de erros ocorrida exceção:
+
+\begin{lstlisting}[language=Java, caption={JSON de resposta do microsserviço de Log.}, label=json-log]
+{
+    "id": "7cca1259-ed23-43a9-b5d2-11c475871df",
+    "ip": "10.0.75.1",
+    "Excecao": "Timeout",
+    "dataExcecao": "2019-03-06T14:13:55.037",
+    "stackTrace": "[com.thingmagic.SerialTransportNative.nativeSendBytes(Native Method), com.thingmagic.SerialTransportNative.sendBytes(SerialTransportNative.java:210), com.thingmagic.SerialReader.sendMessage(SerialReader.java:2159), com.thingmagic.SerialReader.sendTimeout(SerialReader.java:2326), com.thingmagic.SerialReader.sendOpcode(SerialReader.java:2384), com.thingmagic.SerialReader.cmdClearTagBuffer(SerialReader.java:4420), com.thingmagic.SerialReader.read(SerialReader.java:10890), com.rfid.reader.services.ReaderService.readDataTag(ReaderService.java:20), com.rfid.reader.events.ReaderMessageSender.run(ReaderMessageSender.java:26), java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142), java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617), java.lang.Thread.run(Thread.java:745)]"
+}
+\end{lstlisting}
+
+\subsection{Microsserviço de Identidade}
+
+O microsserviço de Identidade é responsável por realizar a autenticação e a autorização de todos os microsserviços presentes na arquitetura: microsserviço de Ativo, microsserviço de Leitura, microsserviço de Telemetria e microsserviço de Log. A autenticação e a autorização é realizada utilizando o protocolo \textit{OAuth 2.0}, onde é gerado um \textit{token} no padrão \acrshort{JWT} para aplicação. A implementação da autenticação e autorização dentro do microsserviço é realizada pela biblioteca de código aberto \textit{IdentityServer4}. 
+
+A \textit{API Gateway} é responsável por gerenciar a autorização dos \textit{endpoints} dos microsserviços que são disponibilizados. O Apêndice \ref{gateway-configuracao} apresenta a implementação realizada na classe inicial de configuração da \textit{API Gateway}. Quando um \textit{endpoint} é solicitado, é verificado utilizando a biblioteca do \textit{IdentityServer4} se o cliente que realizou a solicitação está autenticado e autorizado para acessar o \textit{endpoints} solicitado.
+
+\newpage
+
+\subsection{Barramento de Eventos}
+
+A comunicação entre os microsserviços é realizada com o barramento de eventos através de mensagens utilizando o padrão de projeto \textit{Publish-subscribe} \cite{Dragoni2016} \cite{Richardson2016}. O gerenciamento do barramento de eventos e o envio desses eventos de mensagens é controlada pelo serviço do \textit{Microsoft Azure}, \textit{Service Bus}, implementada no microsserviço de Ativo e no microsserviço de Leitura. A \refFig{mensageria-ativo-leitura} apresenta com detalhes como o barramento de eventos é utilizado. O microsserviço de Ativo comunica-se via evento de mensagem com o microsserviço de Leitura, que notifica via evento de mensagem caso há alguma leitura de tag \acrshort{RFID} associada a algum objeto físico que esteja vinculado ao banco de dados do microsserviço de Ativo.
+
+\figura[!ht]{implementacao/mensageria_ativo_leitura.png}{Comunicação entre os microsserviços de Ativo e Leitura}{mensageria-ativo-leitura}{width=1.05\textwidth}
+
+A identificação ocorre quando o código \acrshort{EPC} da tag \acrshort{RFID} comparado com os dados presentes no banco de dados do microsserviço de Ativo resulta em algum objeto físico identificado. Os outros microsserviços não possuem a necessidade de se comunicar via barramento de eventos por não possuirem dependência de informações. Por esse motivo, não utilizam do barramento de eventos.
+
+O código fonte \ref{sql-ativo} apresenta a consulta \acrshort{SQL} realizada no banco de dados do microsserviço de Ativo para verificar se o objeto físico identificado no microsserviço de Leitura via barramento de eventos está vinculado a algum objeto físico. O campo \textit{@Epc} identifica onde é realizado o filtro do código \acrshort{EPC} da tag \acrshort{RFID} identificado no barramento de eventos:
+
+\begin{lstlisting}[language=SQL, caption={Consulta SQL no microsserviço de Ativo.}, label=sql-ativo]
+SELECT a.Nome, l.Nome AS Local, t.Nome AS Tipo, a.Epc
+FROM dbo.Ativo a
+INNER JOIN dbo.Local l
+ON a.LocalId = l.Id
+INNER JOIN dbo.Tipo t
+ON a.TipoId = t.Id
+WHERE a.Epc = @Epc
+\end{lstlisting}
+
+\subsection{\textit{API Gateway}}
+
+A comunicação dos microsserviços com a aplicação \textit{front-end} é realizada utilizando uma \textit{API Gateway}. A \textit{API Gateway} é responsável por gerenciar e monitorar os microsserviços a serem expostos para serem consumidos na aplicação \textit{front-end}. Na arquitetura proposta, todos os microsserviços são expostos para serem consumidos na aplicação \textit{front-end}. A \textit{API Gateway} foi implementada utilizando o \textit{framework} Web \textit{ASP.NET Core}, na linguagem de programação C\#. A utilização de uma \textit{API Gateway} na arquitetura em microsserviços é importante para disponibilidade e escalabilidade da arquitetura, onde outros microsserviços podem ser conectados à arquitetura e serem monitorados e gerenciados.
+
+O Apêndice \ref{gateway-endpoints} apresenta a configuração dos \textit{endpoints} dos microsserviços implementados na arquitetura. A implementação da \textit{API Gateway} é realizada pela biblioteca de código aberto \textit{Ocelot}. Todos os \textit{endpoints} disponibilizados possuem a autorização realizada no microsserviço de Identidade, pelo único \textit{endpoint} sem autorização, que é responsável por disponibilizar o \textit{token} de autenticação.
+
+\subsection{Aplicação \textit{Front-end}}
+
+A aplicação \textit{front-end} realiza o papel da Camada de Negócio, expondo os microsserviços implementados na Camada de Aplicação. A aplicação \textit{front-end} utiliza a \textit{API Gateway} para consumir os microsserviços implementados. A aplicação \textit{front-end} foi implementada utilizando o \textit{framework} Web \textit{Angular}, na linguagem de programação TypeScript.
+
+A \refFig{web-ativo} apresenta a tela com o resultado da identificação de ativos disponibilizado pelo microsserviço de Ativo e a comunicação via barramento de eventos com o microsserviço de Leitura. A tela apresenta o total de ativos identificados e a listagem dos ativos de acordo com o arquivo \acrshort{JSON} apresentado anteriormente.
+
+A \refFig{web-leitura} apresenta a tela com os resultados de leituras de tags \acrshort{RFID} disponibilizado pelo microsserviço de Leitura. A tela apresenta o total de leituras realizadas e a listagem das leituras de acordo com o arquivo \acrshort{JSON} apresentado anteriormente.
+
+A \refFig{web-telemetria} apresenta a tela com os resultados de telemetrias da placa disponibilizado pelo microsserviço de Telemetria. A tela apresenta o total de telemetrias realizadas e a listagem das telemetrias de acordo com o arquivo \acrshort{JSON} apresentado anteriormente.
+
+A \refFig{web-log} apresenta a tela com os logs gerados pela placa disponibilizado pelo microsserviço de Log. A tela apresenta o total de logs realizados e a listagem dos logs de acordo com o arquivo \acrshort{JSON} apresentado anteriormente.
+
+\figura[!ht]{implementacao/web_ativo.png}{Resultado de identificação de ativos}{web-ativo}{width=1.0\textwidth}
+
+\figura[!ht]{implementacao/web_leitura.png}{Resultado de leituras de tags \acrshort{RFID}}{web-leitura}{width=1.0\textwidth}
+
+\figura[!ht]{implementacao/web_telemetria.png}{Resultado de telemetrias na placa \acrshort{RFID}}{web-telemetria}{width=1.0\textwidth}
+
+\figura[!ht]{implementacao/web_log.png}{Resultado de logs de leitura de tags \acrshort{RFID}}{web-log}{width=1.0\textwidth}
+
+\newpage
+
+Os microsserviços, a \textit{API Gateway} e a aplicação \textit{front-end} são provisionados em \textit{containers} utilizando a tecnologia \textit{Docker}, hospedadas no \textit{Microsoft Azure}. As aplicações são provisionadas em \textit{containers} \textit{Docker} utilizando o \acrshort{SO} Linux. A utilização da tecnologia de \textit{containers} \textit{Docker} facilita a integração entre microsserviços e a computação em nuvem \cite{Vandikas2017}, \cite{Khazaei2017End-to-endApplications}.
+
+A utilização da tecnologia de \textit{containers} facilita uma possível mudança da aplicação para outro provedor de nuvem que possua suporte para \textit{containers} \textit{Docker}, além de ser possível implementar os microsserviços, a \textit{API Gateway} e a aplicação \textit{front-end} em qualquer outra linguagem de programação que ofereça o suporte pra construção de \acrshort{API}.
+
+O Apêndice \ref{docker-servicos} apresenta a configuração da imagem \textit{Docker} do microsserviço de Ativo. A mesma configuração da imagem contempla os outros microsserviços e a \textit{API Gateway} presente do Grupo de Serviços. O Apêndice \ref{docker-web} apresenta a configuração da imagem \textit{Docker} do aplicação \textit{front-end}.
+
+\section{Arquitetura de Integração e Entrega Contínua}
+
+Dragoni et al. \cite{Dragoni2016} afirma que para aproveitar verdadeiramente o poder da implantação independente dos microsserviços é preciso utilizar mecanismos de integração e entrega contínua. A integração e integra contínua estão associadas com a cultura de \textit{DevOps}.
+
+A arquitetura de serviços e de \acrshort{IoT} com a utilização de \textit{Serverless} na arquitetura proposta deste trabalho são fundamentais para esse tipo de cenário. Os \textit{pipelines} automatizados de integração e entrega contínua são provisionados em \textit{containers} utilizando a tecnologia \textit{Docker}, é possível implantar uma versão atualizada de um serviço para produção em questão de segundos, além de ser possível realizar testes em todos os microsserviços e principalmente os que se comunicam, garantindo assim, uma maior confiabilidade quando uma nova versão dos serviços é atualizada.
+
+A \refFig{arquitetura-ci-cd} apresenta a arquitetura de integração e entrega contínua aplicada na arquitetura proposta. O \textit{Azure DevOps} é a ferramenta responsável por realizar os \textit{pipelines} de integração contínua e entrega contínua da arquitetura de serviços (microsserviços, \textit{API Gateway} e aplicação \textit{front-end}) e arquitetura de \acrlong{IoT} (\textit{Serverless}). A arquitetura proposta deste trabalho possui o \textit{pipeline} dos microsserviços, serviço \textit{Serverless} e \textit{API Gateway} e o \textit{pipeline} da aplicação \textit{front-end}.
+
+\figura[!ht]{estudo-caso/arquitetura_ci_cd.png}{Arquitetura de integração contínua e entrega contínua da arquitetura proposta}{arquitetura-ci-cd}{width=1.0\textwidth}
+
+Os códigos fontes dos projetos estão armazenados no GitHub nos repositórios informados no Apêndice \ref{apendice}. O GitHub é integrado com o \textit{Azure DevOps} que o informa quando há algum novo \textit{commit} na \textit{branch} \textit{master} dos projetos. Quando esse novo \textit{commit} acontece, o \textit{Azure DevOps} é acionado para realizar a integração contínua.
+
+O Apêndice \ref{ci-docker-servicos} apresenta a configuração das imagens \textit{Docker} dos microsserviços e da \textit{API Gateway} implementados no arquivo \textit{docker-compose.yml}. Esse arquivo é responsável por ser o orquestrador das imagens dos microsserviços implementados para realização dos \textit{pipelines} de integração contínua e entrega contínua dos microsserviços.
+
+O Apêndice \ref{ci-yaml-servicos} apresenta a configuração do \textit{pipeline} de integração contínua dos microsserviços, \textit{API Gateway} e serviço \textit{Serverless} presente no arquivo \textit{azure-pipelines.yml}. Esse arquivo é executado no momento que o \textit{pipeline} de integração contínua se inicia para o \textit{pipeline} dos microsserviços, serviço \textit{Serverless} e \textit{API Gateway}. O \textit{pipeline} de integração contínua realiza a integração de acordo com os serviços definidos no arquivo \textit{docker-compose.yml} e com os arquivos \textit{Docker} dos microsserviços e \textit{API Gateway} apresentados no Capítulo \ref{cap:desenvolvimento}.
+
+O Apêndice \ref{ci-yaml-web} apresenta a configuração do pipeline de integração contínua da aplicação \textit{front-end}. Esse arquivo é executado no momento que o pipeline de integração contínua se inicia para o pipeline da aplicação \textit{front-end}. O pipeline de integração contínua realiza a integração de acordo o arquivo \textit{Docker} da aplicação \textit{front-end}.
+
+Após a realização da integração contínua dos \textit{pipelines} de acordo com a implementação independente de cada \textit{pipeline}, as imagens \textit{Docker} são armazenadas no \textit{Azure Container Registry}, serviço do \textit{Microsoft Azure} responsável por armazenar e gerenciar imagens de contêiner \textit{Docker}. O código do serviço \textit{Serverless} é armazenado em um arquivo com o formato \textit{zip}.
+
+A entrega contínua possui a finalidade de publicar os microsserviços, \textit{API Gateway}, serviço \textit{Serverless} e a aplicação \textit{back-end} no \textit{Microsoft Azure}. Os microsserviços, \textit{API Gateway} e a aplicação \textit{back-end} são publicados em um \textit{App Service}, serviço do \textit{Microsoft Azure} utilizado para publicar aplicações Web onde cada aplicação se faz uso de \textit{App Service Plan}, serviço do \textit{Microsoft Azure} que publica as aplicações em um servidor. Neste trabalho, as aplicações são armazenadas em um servidor com \acrshort{SO} Linux.
+
+O serviço \textit{Serverless} é publicado a partir do arquivo \textit{zip} gerado no \textit{Azure Functions} e armazenado em um servidor com \acrshort{SO} Windows. Esse servidor é acionado quando o serviço \textit{Serverless} é processado.

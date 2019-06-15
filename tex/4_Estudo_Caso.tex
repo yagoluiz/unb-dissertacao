@@ -1,0 +1,121 @@
+\label{cap:estudo-caso}
+
+De acordo com Runeson et al. \cite{Runeson2012CaseEngineering} o estudo de caso é um estudo empírico para investigar o acontecimento de um fenômeno de engenharia de software contemporâneo dentro de seu contexto de vida real, principalmente quando a fronteira entre o fenômeno e o contexto não pode ser claramente especificada. A técnica de estudo de caso foi utilizada neste trabalho por ser uma técnica bastante utilizada em pesquisas qualitativas e capaz de reunir informações detalhadas a respeito de determinado problema.
+
+O estudo de caso foi aplicado em uma empresa de pequeno à médio porte, denominada pelo nome fictício de Empresa XYZ. A Empresa XYZ atua na área de gestão patrimonial de ativos. A gestão patrimonial de ativos é realizada utilizando leitores de tags RFID móveis e antenas RFID expostas em alguns pontos estratégicos das empresas clientes. Esses pontos estratégicos podem ser garagens, portarias, salas confidenciais, etc. A Empresa XYZ possui clientes com atuação na área bancária, engenharia e hospitais, possuindo aproximadamente 100 mil ativos cadastrados em sua base de dados. A arquitetura proposta neste trabalho visa contemplar a gestão patrimonial utilizando antenas RFID.
+
+A \refFig{empresa-arquitetura-iot} apresenta a arquitetura de \acrshort{IoT} da Empresa XYZ. A arquitetura é compostas por dois grupos: leitura e processamento/armazenamento. Para leitura de tags \acrshort{RFID} é utilizado o leitor de alto custo \textit{Edge-50}\footnote{\emph{\href{http://activa-id.com.br/produto/leitor-rfid-uhf-edge-50}{Edge-50}}}. O leitor \textit{Edge-50} utiliza a frequência \acrshort{UHF}, sendo necessário acoplar uma antena externa ao leitor.
+
+A comunicação do leitor é realizada através do protocolo \acrshort{TCP}, uma das comunicações presentes no leitor. A integração do leitor com o servidor local acontece por meio do \acrshort{SDK} presente no leitor, sendo possível utilizar as linguagens de programação C, C\# ou Java. O servidor local possui um software desenvolvido na linguagem de programação C\#.
+
+Esse software é responsável por processar as informações dos eventos de leitura e log que ocorrem no leitor. Os eventos de leitura e log realizados pelo leitor, são processados de maneira assíncrona, dessa forma, nenhum evento necessita esperar algum evento finalizar para continuar. Os eventos podem ocorrer de forma simultânea, sem que ocorra algum gargalo no processamento das requisições dos eventos. O processamento dos eventos de leitura e log do leitor são enviados no formato de arquivo \acrshort{JSON} para o banco de dados \acrshort{NoSQL} \textit{Table Storage}, serviço oferecido pelo \textit{Microsoft Azure}.
+
+\figura[!ht]{estudo-caso/empresa_arquitetura_iot.png}{Arquitetura IoT da Empresa XYZ}{empresa-arquitetura-iot}{width=1.0\textwidth}
+
+A \refFig{empresa-arquitetura-servicos} apresenta a arquitetura de serviços da Empresa XYZ. A arquitetura foi desenvolvida no estilo arquitetural \textit{multi tenant}, onde todos clientes da Empresa XYZ utilizam do mesmo \textit{back-end} e \textit{front-end}. Esse mesmo estilo arquitetural não é aplicado na arquitetura de \acrshort{IoT}, onde todos os clientes possuem sua arquitetura conforme apresentado na \refFig{empresa-arquitetura-iot}. A arquitetura de serviços é composta por dois grupos: \textit{back-end} e \textit{front-end}, ambos hospedados no \textit{Microsoft Azure}.
+
+O \textit{back-end} da aplicação é uma \acrshort{API} implementada utilizando o \textit{framework} Web \textit{ASP.NET MVC}, na linguagem de programação C\#. A \acrshort{API} foi implementada utilizando o estilo arquitetural \acrshort{REST} com o retorno da resposta dos \textit{endpoints} no formato \acrshort{JSON}. O banco de dados relacional \textit{SQL Server} e o banco de dados \acrshort{NoSQL} \textit{Table Storage} são utilizados na arquitetura \textit{back-end}.
+
+A arquitetura \textit{back-end} apresenta uma aplicação monolítica, onde todos os \textit{endpoints} disponibilizados estão no mesmo projeto, com nenhuma separação de domínios ou responsabilidades. A aplicação é responsável por autenticar, autorizar usuários e gerenciar a gestão patrimonial de ativos. Essas informações estão armazenadas no banco de dados relacional \textit{SQL Server}. As informações dos eventos de leitura e log que ocorrem no leitor \acrshort{RFID} são armazenadas no banco de dados \acrshort{NoSQL} \textit{Table Storage}.
+
+O \textit{front-end} da aplicação, assim como a \acrshort{API} implementada no \textit{back-end}, utiliza o \textit{framework} Web \textit{ASP.NET MVC}, na linguagem de programação C\#. A aplicação \textit{front-end} é responsável por expor os serviços implementados na aplicação \textit{back-end}.
+
+\figura[!ht]{estudo-caso/empresa_arquitetura_servicos.png}{Arquitetura de serviços da Empresa XYZ}{empresa-arquitetura-servicos}{width=0.5\textwidth}
+
+O estudo de caso prático desenvolvido neste trabalho tem como objetivo responder às seguintes questões de pesquisa:
+
+\begin{enumerate}
+    \item \textbf{RQ.1.} Na arquitetura proposta, quais são as vantagens da arquitetura de serviços e arquitetura de \acrshort{IoT} em relação a apresentada na Empresa XYZ?
+    \item \textbf{RQ.2.} Na arquitetura proposta, quais são as principais características apresentadas na placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} em relação ao leitor \textit{Edge-50}?
+    \item \textbf{RQ.3.} Na arquitetura proposta, é possível realizar o monitoramento dos microsserviços implementados?
+\end{enumerate}
+
+A \textbf{RQ.1.} está relacionada com a implementação da arquitetura de serviços e da arquitetura de \acrshort{IoT} proposta no cenário real apresentado da Empresa XYZ. Pretende-se demonstrar como os microsserviços e o provedor de computação em nuvem \textit{Microsoft Azure} facilitam a interoperabilidade, flexibilidade, escalabilidade e provisionamento rápido dos microsserviços, além de demonstrar com os serviços oferecidos pelo \textit{Microsoft Azure} facilitam o desenvolvimento da arquitetura de \acrshort{IoT}.
+
+A \textbf{RQ.2.} está relacionada com a implementação da arquitetura de \acrlong{IoT} proposta no cenário real apresentado da Empresa XYZ. Pretende-se demonstrar as principais características da placa \acrshort{RFID} \textit{SparkFun Simultaneous RFID Reader - M6E Nano} em relação ao leitor utilizado na arquitetura da Empresa XYZ, \textit{Edge-50}.
+
+A \textbf{RQ.3.} está relacionada com a visualização do monitoramento dos microsserviços implementados na arquitetura proposta. Pretende-se demonstrar como a \textit{API Gateway} e o provedor de computação em nuvem \textit{Microsoft Azure} fornecem informações sobre o monitoramento dos microsserviços implementados.
+
+\section{Coleta de Dados e Procedimentos de Análise}
+
+Para realizar a coleta dos dados e realizar a análise dos resultados, toda a arquitetura proposta foi implementada para responder as questões de pesquisa destinadas ao estudo de caso deste trabalho. Um dos grandes problemas presentes na arquitetura de serviços da Empresa XYZ é a impossibilidade de escalar os serviços de forma independente, além de não possuir uma cultura de \textit{DevOps} para automatizar a integração e entrega contínua dos serviços. Esses problemas apresentados são características comuns em arquiteturas monolíticas, conforme a arquitetura de serviços da Empresa XYZ apresentada na \refFig{empresa-arquitetura-servicos}.
+
+A arquitetura de serviços e de \acrshort{IoT} com a utilização de \textit{Serverless} na arquitetura proposta neste trabalho em conjunto com a cultura de \textit{DevOps}, são fundamentais para esse tipo de cenário. Os \textit{pipelines} automatizados de integração e entrega contínua, quando provisionados em \textit{containers} e utilizando a tecnologia \textit{Docker}, torna possível a implementação de uma versão atualizada de um serviço para produção em questão de segundos, além de ser possível realizar testes em todos os microsserviços, principalmente nos que se comunicam, garantindo assim, uma maior confiabilidade quando uma nova versão dos serviços é atualizada. Para responder a \textbf{RQ.1.}, foi implementado a arquitetura de integração e entrega contínua conforme apresentada no Capítulo \ref{cap:desenvolvimento}.
+
+Para responder a \textbf{RQ.2.} do estudo de caso deste trabalho, foram analisadas as principais características da placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} apresentada na arquitetura proposta e o leitor \textit{Edge-50} presente na arquitetura da Empresa XYZ. Ambos utilizam a mesma frequência \acrshort{UHF} para leitura de tags \acrshort{RFID} e possuem o mesmo \acrshort{SDK} de desenvolvimento, sendo possível utilizar as linguagens de programação C, C\# ou Java.
+
+\newpage
+
+Os principais diferenciais dos dois leitores são a quantidade de antenas externas suportadas e o custo de mercado. A placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} apresenta uma antena interna acoplada na placa, sendo possível adicionar apenas uma antena externa à placa. No leitor \textit{Edge-50} é necessário incluir alguma antena externa ao leitor, suportando até 4 antenas de tags.
+
+O custo de mercado do leitor \textit{Edge-50} é aproximadamente 10 vezes mais alto do que a placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}. Mesmo com a diferença de suporte das antenas externas, o custo da placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} ainda é ainda mais baixo em relação ao leitor \textit{Edge-50}.
+
+Para responder a \textbf{RQ.3} do estudo de caso deste trabalho, é utilizado um serviço do \textit{Microsoft Azure} capaz de realizar o monitoramento de aplicações hospedadas no provedor. O serviço oferecido pelo \textit{Microsoft Azure}, \textit{Application Insights}, realiza o monitoramento de todas as aplicações da arquitetura, sendo capaz de diagnosticar exceções, problemas de desempenho e de apresentar métricas de uso.
+
+Na arquitetura proposta, a \textit{API Gateway} agrega todos os microsserviços monitorados, sendo responsável por gerenciar e monitorar os microsserviços a serem expostos na aplicação \textit{front-end}.
+
+A \refFig{gateway-monitoramento-01} e \refFig{gateway-monitoramento-02} apresentam o monitoramento realizado nos microsserviços utilizados pela \textit{API Gateway}. É possível observar que qualquer inconsistência nos serviços é apresentada no monitoramento.
+
+\newpage
+
+\figura[!ht]{estudo-caso/monitoramento_gateway_01.png}{Monitoramento dos microsserviços utilizados pela \textit{API Gateway} - Parte 01}{gateway-monitoramento-01}{width=1.1\textwidth}
+
+\figura[!ht]{estudo-caso/monitoramento_gateway_02.png}{Monitoramento dos microsserviços utilizados pela \textit{API Gateway} - Parte 02}{gateway-monitoramento-02}{width=1.1\textwidth}
+
+\newpage
+
+Para validar a performance da arquitetura proposta, a arquitetura de serviços e \acrshort{IoT} foram monitorados utilizando o serviço do \textit{Microsoft Azure}, \textit{Azure Monitor}. Através do monitoramento da arquitetura, foram extraídas métricas de performance. Apenas a aplicação \textit{back-end} não foi monitorada, por não mostrar resultados importantes como os extraídos pelo serviço \textit{Serverless} e pela \textit{API Gateway}.
+
+A arquitetura de serviços e \acrshort{IoT} foram monitorados no período de 1 hora, com o servidor local processando a leitura de tags \acrshort{RFID} e a aplicação \textit{back-end} solicitando 1 requisição para cada \textit{endpoint} da \textit{API Gateway}, a cada 3 segundos. O servidor onde estão hospedadas as aplicações da arquitetura de serviços possui as seguintes configurações:
+
+\begin{itemize}
+    \item \textbf{Sistema Operacional:} Unix 4.4.0.128;
+    \item \textbf{Memória RAM:} 1.75 \textit{Gigabytes};
+    \item \textbf{Processador:} 1 Core.
+\end{itemize}
+
+Essas são as únicas informações disponibilizadas pelo \textit{Microsoft Azure} sobre a configuração do servidor. O servidor do serviço \textit{Serverless}, \textit{Azure Functions} não possui configuração fixa. O servidor utiliza a mémoria RAM e o processamento de CPU necessário para executar cada solicitação.
+
+A \refFig{grafico-iot-requisicoes} apresenta a quantidade de requisições realizadas pela placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}. As requisições realizadas contemplam os eventos descritos na arquitetura proposta: telemetria, leitura e log. Foram geradas mais de 4000 requisições no período de monitoramento com 3085 inserções de leituras de tags \acrshort{RFID} e 5950 inserções de telemetrias na placa, que foram posteriormente inseridas no banco de dados \acrshort{NoSQL} \textit{Cosmos DB}.
+
+\figura[!ht]{estudo-caso/grafico_iot_requisicoes.png}{Quantidade de requisições na placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano}}{grafico-iot-requisicoes}{width=1.1\textwidth}
+
+A \refFig{grafico-function-processamento} apresenta a utilização média de processamento de CPU e memória RAM no serviço \textit{Serverless}. É comum a grande utilização de memória RAM em relação ao processamento de CPU nesse tipo de serviço, em decorrência da arquitetura de consumo de serviços \textit{Serverless}. No período foi utilizados, em média, 2GB de mémoria RAM e 1\% de consumo do processamento da CPU.
+
+\figura[!ht]{estudo-caso/grafico_function_processamento.png}{Processamento de CPU e memória RAM no serviço \textit{Serverless}}{grafico-function-processamento}{width=1.1\textwidth}
+
+\newpage
+
+A \refFig{grafico-function-resposta} apresenta o tempo médio de resposta do serviço \textit{Serverless} quando solicitado. Em média, o serviço respondia as requisições em um tempo médio de 13.88 milissegundos. Essa resposta rápida deve-se pela arquitetura de consumo de serviços \textit{Serverless}.
+
+\figura[!ht]{estudo-caso/grafico_function_resposta.png}{Tempo de resposta do serviço \textit{Serverless}}{grafico-function-resposta}{width=1.1\textwidth}
+
+A \refFig{grafico-gateway-processamento} apresenta a utilização média de processamento de CPU e memória RAM da \textit{API Gateway}. Diferentemente do serviço \textit{Serverless} a um consumo maior de processamento de CPU, mas com o consumo de memória RAM ainda maior. No período, foram utilizados, em média 81\% de mémoria RAM e 19\% de consumo do processamento da CPU. Esse consumo apresentado também reflete nos servidores dos microsserviços.
+
+\figura[!ht]{estudo-caso/grafico_gateway_processamento.png}{Processamento de CPU e memória RAM na \textit{API Gateway}}{grafico-gateway-processamento}{width=1.1\textwidth}
+
+A \refFig{grafico-gateway-resposta} apresenta o tempo médio de resposta da \textit{API Gateway} quando solicitada. Em geral, o serviço respondia as requisições em um tempo de aproximadamente 275.54 milissegundos. Essa resposta é maior em comparação com o serviço \textit{Serverless}. Esse consumo apresentado também reflete nos servidores dos microsserviços.
+
+\figura[!ht]{estudo-caso/grafico_gateway_resposta.png}{Tempo de resposta da \textit{API Gateway}}{grafico-gateway-resposta}{width=1.1\textwidth}
+
+\newpage
+
+A \refFig{grafico-mensageria-requisicoes} apresenta a quantidade de requisições realizadas no barramento de eventos \textit{Service Bus}. Foram realizados um total de 45044 requisições e a inserção de 9076 mensagens. A quantidade alta de requisições deve-se à comunicação dos microsserviços de Ativo e Leitura.
+
+\figura[!ht]{estudo-caso/grafico_mensageria_requisicoes.png}{Quantidade de requisições no barramento de eventos \textit{Service Bus}}{grafico-mensageria-requisicoes}{width=1.1\textwidth}
+
+Por fim, a \refFig{grafico-cosmos-requisicoes} apresenta a quantidade média de requisições realizadas no banco de dados \acrshort{NoSQL} \textit{Cosmos DB}. Foram realizadas, em média, 3.29 requisições por segundo.
+
+\figura[!ht]{estudo-caso/grafico_cosmos_requisicoes.png}{Quantidade de requisições no banco de dados \textit{Cosmos DB}}{grafico-cosmos-requisicoes}{width=1.1\textwidth}
+
+\section{Discussão, Lições Aprendidas e Ameaças à Validade}
+
+Os resultados obtidos na \textbf{RQ.1.} demonstraram a complexidade e alto custo de desenvolvimento da arquitetura proposta utilizando microsserviços e computação em nuvem, em relação à arquitetura monolítica de serviços e a arquitetura de \acrshort{IoT} da Empresa XYZ. A arquitetura proposta mostrou-se extremamente necessária para o contexto proposto no estudo de caso deste trabalho. A arquitetura de serviços e de \acrshort{IoT} com a utilização de \textit{Serverless}, em conjunto com a cultura de \textit{DevOps} e dos conceitos de integração e entrega contínua, foram fundamentais para o contexto proposto no estudo de caso deste trabalho.
+
+Ademais, a utilização de \textit{containers} em \textit{Docker} e os serviços oferecidos pelo \textit{Microsoft Azure} foram facilitadores para o desenvolvimento da arquitetura proposta, por possuírem serviços específicos para aplicações em \acrshort{IoT} e para o gerenciamento, processamento e armazenamento das informações de leitura que a placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} oferece.
+
+Os resultados obtidos na \textbf{RQ.2.} do estudo de caso deste trabalho demonstraram que a placa \textit{SparkFun Simultaneous RFID Reader - M6E Nano} utilizada apresentou características satisfatórias para leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF}. A placa conseguiu realizar leitura de tags RFID com a distância de aproximadamente 1 metro (apenas com sua antena interna), com a capacidade de leitura de aproximadamente 100 tags RFID por segundo. A temperatura média da placa ficou em torno de 48Cº. A utilização de uma antena UHF externa acoplada à placa aumentaria a eficiência de sua leitura. A utilização de uma antena \acrshort{UHF} externa é necessária onde a distância de leitura é requisito mínimo para execução desse tipo de projeto.
+
+Outra característica importante apresentada neste trabalho foi a interoperabilidade, flexibilidade e escalabilidade da arquitetura proposta, além da possibilidade de a adequação da arquitetura proposta para outro provedor de nuvem que contenha os mesmos serviços utilizados e o suporte ao uso de \textit{containers} em \textit{Docker}.
+
+Os resultados obtidos na \textbf{RQ.3.}, assim como na \textbf{RQ.1.}, apresentam a importância do uso dos serviços oferecidos pelo \textit{Microsoft Azure}. Com a utilização dos serviços oferecidos foi realizada a implementação e os testes de performance para responder as questões de pesquisa definidas neste trabalho.

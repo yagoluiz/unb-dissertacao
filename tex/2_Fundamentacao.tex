@@ -1,0 +1,290 @@
+\label{cap:fundamentacao}
+
+Este capítulo apresenta uma revisão dos principais conceitos relacionados ao tema desta dissertação. A Seção \ref{sec:iot} apresenta os conceitos sobre \acrlong{IoT}. A Seção \ref{sec:rfid} apresenta os conceitos sobre \acrlong{RFID}. A Seção \ref{sec:computação-nuvem} apresenta os conceitos sobre computação em nuvem. A Seção \ref{sec:microsserviços} apresenta os conceitos sobre microsserviços. A Seção \ref{sec:trabalhos-relacionados} apresenta os principais trabalhos relacionados ao estudo deste trabalho. E por fim, a Seção \ref{sec:discussao} apresenta uma discussão acerca da implementação proposta em relação à fundamentação teórica e aos trabalhos relacionados.
+
+\section{Internet das Coisas}
+\label{sec:iot}
+
+%-- Trabalhos - IoT
+
+% Design and Evaluation of a Semantic Gateway Prototype for IoT Networks
+% Future internet: The internet of things architecture, possible applications and key challenges
+% Internet of Things (IoT) Overview. Internet of Things
+% Context Aware Computing for The Internet of Things: A Survey
+% Internet of Things (IoT): A vision, architectural elements, and future directions
+% On the integration of cloud computing and internet of things
+% A vision, architectural elements, and security issues
+% Internet of Things: ’A panoramic observation’
+
+%----------- Introdução -----------%
+
+A \acrshort{IoT} é um paradigma para a construção de sistemas computacionais distribuídos pela Internet, nos quais, em princípio, os mais diversos dispositivos, objetos e coisas estarão conectados e interagindo com aplicativos para estender diversos serviços às pessoas \cite{Gubbi2013} \cite{Filho2017DesignNetworks}. A \acrshort{IoT} permite que todos os tipos de "coisas", que são objetos do mundo real, sejam conectadas à Internet e interajam entre si com o mínimo de intervenção humana \cite{Perera2014}, \cite{Khan2012}.
+
+A \acrshort{IoT} envolve dispositivos inteligentes conectados e sensores que geralmente não são intrusivos \cite{Rayes2017}. A diferença entre a \acrshort{IoT} e as redes de sensores se dá com a inteligência que a \acrshort{IoT} tem em seu domínio, transformando informações e ações em conhecimento. Desta forma, esse conhecimento alimenta uma rede, criando novas ações e informações \cite{Gubbi2013}, \cite{Botta2014}.
+
+\figura[!ht]{fundamentacao/arquitetura_iot_definicao.png}{Definição mais ampla sobre \acrshort{IoT}. Adaptado de \cite{Perera2014}}{arquitetura-iot-definicao}{width=0.6\textwidth}
+
+A \acrshort{IoT} permite que pessoas e objetos sejam conectados a qualquer hora, em qualquer lugar, com qualquer dispositivo, com qualquer serviço e utilizando qualquer caminho de comunicação. A comunicação é frequentemente feita de forma autônoma e realizada em uma rede \cite{Perera2014}. A \refFig{arquitetura-iot-definicao} apresenta a definição mais ampla relacionada a \acrshort{IoT}. O fluxo de trabalho básico da \acrshort{IoT} pode ser descrito da seguinte forma \cite{Khan2012}: 
+
+\begin{itemize}
+    \item \textbf{Detecção de objetos:} as informações dos objetos são os dados detectados sobre temperatura, orientação, movimento, vibração, aceleração, umidade, mudanças químicas no ar, dentre outras, a depender do tipo de sensor;
+    \item \textbf{Ação do objeto:} as informações dos objetos são processadas por um dispositivo inteligente que determina uma ação automatizada a ser executada;
+    \item \textbf{Situação do dispositivo:} o dispositivo inteligente fornece serviços e um mecanismo para fornecer o \textit{feedback} sobre a situação atual do dispositivo e os seus resultados.
+\end{itemize}
+
+No contexto da \acrshort{IoT}, os dispositivos possuem cinco características fundamentais \cite{Vashi2017InternetIssues}, \cite{Yousaf2017InternetObservation}: Conectado à Internet, Capacidade de Detecção e Atuação, Inteligência Incorporada e Capacidade de Comunicação Interoperável.
+
+\begin{enumerate}
+    \item \textbf{Conectado à Internet:} os dispositivos devem estar conectados à Internet usando conexões com ou sem fio;
+    \item \textbf{Único:} os dispositivos são exclusivamente identificáveis por meio de uma rede;
+    \item \textbf{Capacidade de detecção e atuação:} os dispositivos são capazes de realizar tarefas de detecção/atuação de forma autônoma;
+    \item \textbf{Inteligência incorporada:} os dispositivos possuem funções de inteligência e são capazes de autoconfigurar-se;
+    \item \textbf{Capacidade de comunicação interoperável:} o sistema \acrshort{IoT} possui uma capacidade de comunicação baseada em tecnologias padrões.
+\end{enumerate}
+
+%----------- Arquitetura -----------%
+
+A arquitetura em \acrshort{IoT} é definida como uma estrutura para a especificação dos componentes físicos de uma rede, sua organização e configuração funcional, seus princípios e procedimentos operacionais, bem como formatos de dados usados em sua operação \cite{Vashi2017InternetIssues}. A arquitetura da \acrshort{IoT} é definida em cinco camadas \cite{Khan2012}: Camada de Percepção, Camada de Rede, Camada de \textit{Middleware}, Camada de Aplicação e Camada de Negócio. A \refFig{arquitetura-iot-camadas} apresenta a arquitetura de \acrshort{IoT}.
+
+\figura[!ht]{fundamentacao/arquitetura_iot_camadas.png}{Arquitetura em camadas da \acrshort{IoT}. Adaptado de \cite{Khan2012}}{arquitetura-iot-camadas}{width=0.7\textwidth}
+
+A arquitetura \acrshort{IoT} em camadas compreende \cite{Khan2012}:
+
+\begin{itemize}
+    \item \textbf{Camada de Percepção:} a Camada de Percepção também é conhecida como Camada do Dispositivo. Consiste em objetos físicos e dispositivos. Os dispositivos podem ser \acrshort{RFID}, código de barras, sensor infravermelho, dependendo do método de identificação de objetos. Esta camada trata basicamente da identificação e coleta de informações específicas de objetos pelos dispositivos. Conforme o tipo de sensores, as informações podem ser sobre localização, temperatura, orientação, movimento, vibração, aceleração, umidade, dentre outras. As informações coletadas são enviadas para a Camada de Rede, para uma transmissão segura para ao sistema de processamento de informações (\refFig{arquitetura-iot-camadas});
+    \item \textbf{Camada de Rede:} a Camada de Rede também é conhecida como Camada de Transmissão. Esta camada transfere com segurança as informações dos dispositivos e sensores para o sistema de processamento de informações. O meio de transmissão pode ser com fio ou sem fio, e a tecnologia pode ser 3G/4G, \textit{Wifi}, \textit{bluetooth}, dentre outras. A Camada de Rede transfere as informações da Camada de Percepção para a Camada de \textit{Middleware} (\refFig{arquitetura-iot-camadas});
+    \item \textbf{Camada de \textit{Middleware}:} os dispositivos de \acrshort{IoT} implementam diferentes tipos de serviços. Cada dispositivo se conecta e se comunica apenas com os outros dispositivos que implementam o mesmo tipo de serviço. Esta camada é responsável pelo gerenciamento de serviços e possui um \textit{link} para o banco de dados. Ele recebe as informações da camada de rede e as armazena no banco de dados. A Camada de \textit{Middleware} realiza processamento de informações e computação onipresente e toma decisões automáticas, com base nos resultados (\refFig{arquitetura-iot-camadas});
+    \item \textbf{Camada de Aplicação:} esta camada fornece o gerenciamento global do dispositivo, com base nas informações de objetos processadas na Camada de \textit{Middleware}. As aplicações implementadas pela IoT podem ser de saúde inteligente, agricultura inteligente, casa inteligente, cidade inteligente, transporte inteligente, dentre outras (\refFig{arquitetura-iot-camadas});
+    \item \textbf{Camada de Negócios:} esta camada é responsável pelo gerenciamento e gestão do sistema geral da \acrshort{IoT}, incluindo as aplicações e serviços. Ela constrói modelos de negócios e gráficos com base nos dados recebidos da Camada de Aplicação. O verdadeiro sucesso da tecnologia \acrshort{IoT} também depende dos bons modelos de negócios. Baseado na análise dos resultados, esta camada ajudará a determinar as ações futuras e estratégias de negócios (\refFig{arquitetura-iot-camadas}).
+\end{itemize}
+
+%----------- Conclusão -----------%
+
+A \acrshort{IoT} permite que muitas aplicações sejam criadas em domínios de aplicações diferentes. O domínio de aplicação pode ser dividido principalmente em três categorias, baseadas em seu foco: indústria, meio ambiente e sociedade. Aplicações de transporte e logística, aeroespacial, aviação e automotivo, são algumas das aplicações focadas na indústria. Telecomunicação, tecnologia médica, saúde, construção inteligente, casa e escritório, mídia, entretenimento e emissão de bilhetes, são algumas das aplicações focadas na sociedade. Agricultura, reciclagem, alerta para desastres e monitoramento ambiental, são algumas das aplicações focadas no meio ambiente. A \acrshort{IoT} apresenta vários benefícios. Os principais benefícios são: melhorar a eficiência de aplicações que necessitam de interação com dispositivos físicos, aumentar a flexibilidade e interações das aplicações e o constante barateamento de aplicações que utilizam \acrshort{IoT} \cite{Perera2014}, \cite{Khan2012}.
+
+Neste trabalho, é utilizado a arquitetura padrão em \acrshort{IoT} definida por Khan \cite{Khan2012} no desenvolvimento da arquitetura proposta, além de utilizar a \acrshort{IoT} para identificação do dispositivo de leitura de tags \acrshort{RFID} com a frequência \acrshort{UHF} de baixo custo presente na arquitetura proposta.
+
+\section{RFID}
+\label{sec:rfid}
+
+%-- Trabalhos - RFID
+
+% RFID Security and Privacy: A Research Survey
+% RFID Systems: Research Trends and Challanges
+% The effects of single bit quantization on direction of arrival estimation of UHF RFID tags
+% Analysis of wearable ungrounded antennas for UHF RFIDs with respect to the coupling with human-body
+% Design of Internet of Things System for Library Materials Management Using UHF RFID
+% Efficient and Reliable Missing Tag Identification for Large-Scale RFID Systems with Unknown Tags
+% An integrated system of applying the use of Internet of Things, RFID and cloud computing: A case study of logistic management of Electricity Generation Authority of Thailand (EGAT) Mae Mao Lignite Coal Mining, Lampang, Thailand
+
+%----------- Introdução -----------%
+
+A \acrshort{RFID} é uma tecnologia para identificação automatizada de objetos e pessoas, sendo uma das principais tecnologias de \acrshort{IoT}. A tecnologia \acrshort{RFID} apresenta grande penetração no mercado e tem sido utilizada em várias áreas de aplicação: gestão de transporte e logística, sistemas de estacionamento inteligentes, gestão de resíduos, pecuária, monitoramento de pacientes, perfuração de petróleo, controle de qualidade, rastreamento de ativos, entre outras aplicações \cite{Juels2006RFIDSurvey}, \cite{Tsiropoulou2017RFID-basedSystem}.
+
+A \acrshort{RFID} já é utilizada amplamente nos dias de hoje. Os exemplos incluem cartões de proximidade, pagamento automático de pedágios, \textit{tokens} de pagamento, as chaves de ignição de muitos automóveis, que além disso, incluem etiquetas \acrshort{RFID} como um dispositivo de segurança para impedir roubos, entre outros \cite{Juels2006RFIDSurvey}. A \acrshort{RFID} utiliza ondas de rádio e campos eletromagnéticos para ler ou gravar automaticamente informações armazenadas em etiquetas \acrshort{RFID}, também conhecidas como tags \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}. As tags \acrshort{RFID} possuem um identificador único conhecido como \acrshort{EPC}, responsável por identificar de forma exclusiva uma tag rastreada \cite{Huiting2016}, \cite{Casula2016}. Por questão de baixo custo, as tags \acrshort{EPC} aderem a um design minimalista. Elas carregam poucos dados na memória interna. O código \acrshort{EPC} de uma tag \acrshort{RFID} inclui as informações necessárias para a identificação de um item rastreado dentro de um banco de dados \cite{Juels2006RFIDSurvey}. A \acrshort{RFID} aparece como o sucessor do código de barras, mas com diferenças fundamentais \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}. As principais características de uma tag \acrshort{RFID} que os diferenciam do código de barras são:
+
+\begin{itemize}
+    \item \textbf{Identificação exclusiva:} um código de barras indica o tipo de objeto no qual é impresso. Uma tag \acrshort{RFID} emite um número de série único, \acrshort{EPC}, que distingue entre milhões de objetos manufaturados de forma idêntica. O código \acrshort{EPC} de uma tag \acrshort{RFID} pode atuar como identificador único para um banco de dados;
+    \item \textbf{Automação:} os códigos de barras, sendo digitalizados opticamente, exigem contato da linha com os leitores e, portanto, um cuidadoso posicionamento físico dos objetos digitalizados. Exceto nos ambientes mais rigorosamente controlados, a leitura de código de barras requer intervenção humana. Em contraste, as tags \acrshort{RFID} são legíveis sem contato de linha de visão e sem posicionamento preciso. Os leitores de \acrshort{RFID} podem digitalizar tags a taxas de centenas por segundo.
+\end{itemize}
+
+Existem três tipos de tags \acrshort{RFID} em relação ao seu poder energético: passiva, semi-passiva e ativa \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}, \cite{Li2016}:
+
+\begin{itemize}
+    \item \textbf{Tags \acrshort{RFID} passivas:} não possuem fontes de energia interna. Ao receberem o sinal de rádio frequência do leitor de tag \acrshort{RFID}, parte dessa energia é transformada em corrente elétrica dentro da tag \acrshort{RFID}, que por fim enviam um sinal de resposta com informações presentes no chip na tag \acrshort{RFID}. A tag passiva possui um custo menor do que os outros tipos de tags, mas é necessário que o leitor de tag \acrshort{RFID} seja de maior potência, devido à quantidade de energia necessária para emissão do sinal de resposta, presentes na tag \acrshort{RFID} \cite{Juels2006RFIDSurvey}, \cite{Bolic2010}; 
+    \item \textbf{Tags \acrshort{RFID} semi-passivas:} possuem fonte de energia utilizando uma bateria interna. A bateria interna é ativada ao receber um sinal de rádio frequência do leitor de tag \acrshort{RFID}. A bateria interna é utilizada para alimentar o chip presente dentro da tag \acrshort{RFID}, enquanto a energia utilizada para comunicação é recebida pelo leitor de tag \acrshort{RFID} \cite{Bolic2010}, \cite{Juels2006RFIDSurvey};
+    \item \textbf{Tags \acrshort{RFID} ativas:} assim como as tags \acrshort{RFID} semi-passivas, possuem fonte de energia utilizando uma bateria interna. A bateria interna é ativada ao receber um sinal de rádio frequência do leitor de tag \acrshort{RFID}. A tag \acrshort{RFID} ativa consegue emitir de forma contínua o seu sinal, independente do recebimento do leitor de tag \acrshort{RFID}. A tag ativa possui um custo maior do que os outros tipos de tags, mas podem ser identificadas em distâncias maiores de 100 metros e possuem maiores recursos dentro do chip na tag \acrshort{RFID} \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}.
+\end{itemize}
+
+%----------- Arquitetura -----------%
+
+A identificação de leitura de uma tag \acrshort{RFID} ocorre quando a mesma está dentro de uma proximidade de um leitor \acrshort{RFID} e o sinal de rádio é transmitido pelo leitor junto à tag. A tag recebe o sinal e então se identifica com o leitor pelo seu identificador único \acrshort{EPC}. O leitor capta o sinal enviado pela tag decodifica-o e transmite a informação para um sistema de \textit{software} responsável por realizar o processamento da informação da tag \acrshort{RFID} \cite{Bolic2010}. 
+
+Essa transmissão pode ocorrer de várias formas, como a partir da Internet, \textit{Wifi}, comunicação serial, \textit{bluetooth}, dentre outras \cite{Li2016}, \cite{Chen2017EfficientTags}. A \refFig{arquitetura-rfid-basica} apresenta a arquitetura de como ocorre a identificação de uma tag \acrshort{RFID}.
+
+\figura[!htb]
+{fundamentacao/arquitetura_rfid_basica.png}{Arquitetura de identificação de leitura de tag \acrshort{RFID}. Adaptado de \cite{Bolic2010}}{arquitetura-rfid-basica}{width=1.0\textwidth}
+
+\newpage
+
+Os sistemas \acrshort{RFID} podem ser classificados pelo seu tipo de frequência e região de frequência \cite{Chieochan2017}: \acrfull{LF}, \acrfull{HF} e \acrfull{UHF}. A \refTab{tab:classificacao-rfid} apresenta a classificação da \acrshort{RFID} em relação à sua frequência e características \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}, \cite{Li2016}.
+
+\begin{table}[htb!]
+\caption{Classificação da \acrshort{RFID} em relação à frequência \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}, \cite{Li2016}.}
+\label{tab:classificacao-rfid}
+\begin{tabular}
+{|p{3.0cm}|p{5cm}|p{2.5cm}|p{3.7cm}|}
+\hline 
+\textbf{Tipo} & \textbf{Região} & \textbf{Alcance} & \textbf{Características} \\ \hline
+\acrfull{LF} & 30-500 \acrfull{KHz} & Até 0.5 metro & Custo baixo e alcance baixo de leitura e gravação. \\ \hline
+\acrfull{HF} & 10-15 \acrfull{MHz} & Até 1 metro & Potencialmente de baixo custo e alcance médio de leitura e gravação. \\ \hline
+\acrfull{UHF} & 850-950 \acrfull{MHz}, 2.4-3.5 \acrfull{GHz} e 5.8 \acrfull{GHz} & Dezenas de metros & Alto custo e alcance alto de leitura e gravação. \\ \hline
+\end{tabular}
+\end{table}
+
+Há normas e padrões que definem os dispositivos \acrshort{RFID}. A \textit{ISO 18000} é uma norma que especifica protocolos para diversas frequências diferentes, incluindo bandas as \acrshort{LF}, \acrshort{HF} e \acrshort{UHF}. Para tags \acrshort{UHF}, o padrão predominante é o \textit{EPCglobal Class-1 Gen-2}. Para tags \acrshort{HF}, existem dois padrões principais além da \textit{ISO 18000}. A \textit{ISO 14443} é um padrão para dispositivos \acrshort{RFID}, com uma faixa nominal de operação de 10 centímetros. O \textit{ISO 15693} é um padrão de \acrshort{HF} para dispositivos RFID, com faixas nominais maiores, até 1 metro para configurações de antenas grandes \cite{Juels2006RFIDSurvey}.
+
+%----------- Conclusão -----------%
+
+Diferentemente dos códigos de barras, as tags \acrshort{RFID} não precisam estar dentro da linha de visão do leitor para serem rastreadas, ocasionando maior eficiência e velocidade na busca de itens com tags \acrshort{RFID}. Em comparação com o tipo de frequência \acrshort{LF} e \acrshort{HF}, a frequência \acrshort{UHF} possui um alcance de leitura e gravação mais amplo. Entretanto, em comparação às demais frequências, o custo de implementação utilizando esse tipo de frequência é mais alto \cite{Bolic2010}, \cite{Juels2006RFIDSurvey}.
+
+Neste trabalho, é utilizada a etiqueta passiva e a frequência \acrshort{UHF}, respectivamente, devido ao custo menor em comparação aos outros tipos de tags e ao alcance alto de distância de leitura das tags \acrshort{RFID}.
+
+\section{Computação em Nuvem}
+\label{sec:computação-nuvem}
+
+%-- Trabalhos - Computação em Nuvem
+
+% Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility
+% Cloud computing: State-of-the-art and research challenges
+% Cloud computing - Concepts, architecture and challenges
+% Cloud computing features, issues, and challenges: A big picture
+% InterCloud: Utility-Oriented Federation of Cloud Computing Environments for Scaling of Application Services
+
+%----------- Introdução -----------%
+
+A computação em nuvem é um tipo de sistema paralelo e distribuído, que consiste em uma coleção de computadores interconectados e virtualizados, dinamicamente provisionados e disponibilizados como recursos computacionais (por exemplo, redes, servidores, armazenamento, aplicações) \cite{Buyya2009}. Os recursos computacionais são disponibilizados com base em \acrshort{SLA} estabelecido por meio de negociação entre os provedores de serviços de computação em nuvem e seus clientes. Os ambientes em computação em nuvem são rapidamente configurados e liberados com um mínimo esforço de gerenciamento ou de interação com os provedores de serviços \cite{Zhang2010}.
+
+O termo nuvem, presente em computação em nuvem, denota a infraestrutura onde os usuários podem acessar aplicações incluídas no ambiente de qualquer lugar do mundo, a qualquer momento. Assim, o mundo da computação está se transformando rapidamente em desenvolvimento de softwares utilizando serviços em nuvem, ao invés de executar esses softwares em ambientes e infraestruturas locais \cite{Zhang2010}, \cite{Jadeja2012}. 
+
+As plataformas de computação em nuvem possuem características de computação em grade e clusterização, com atributos e recursos especiais, como suporte para virtualização, serviços dinamicamente compostos com interfaces Web para gerenciamento e facilidade na configuração de ambientes. A computação em nuvem fornece serviços aos usuários sem referência à infraestrutura na qual eles estão hospedados \cite{Buyya2009}. 
+
+%----------- Arquitetura -----------%
+
+A arquitetura de computação em nuvem provê modelos de serviços, sendo que cada um trata de uma particularidade na disponibilização de recursos para as aplicações: \acrfull{IaaS}, \acrfull{SaaS} e \acrfull{PaaS} \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}. No modelo \acrshort{IaaS}, o fornecedor do serviço disponibiliza servidores como máquinas virtuais que são consumidas como serviços. O cliente desse tipo de serviço é responsável por toda a configuração nesse tipo de modelo. No modelo \acrshort{SaaS}, o fornecedor do serviço se responsabiliza por toda a estrutura necessária para disponibilização do sistema, como infraestrutura, segurança e conectividade. O cliente desse tipo de serviço paga um valor pelo serviço que é acessado via Internet. O modelo \acrshort{PaaS} é um meio termo entre o \acrshort{IaaS} e \acrshort{SaaS}, onde o provedor do serviço oferece os dois em um único modelo \cite{Buyya2009}. A \refFig{arquitetura-computacao-nuvem} apresenta as camadas da arquitetura da computação em nuvem, as quais são:
+
+\figura[htb!]
+{fundamentacao/arquitetura_computacao_nuvem.png}{Arquitetura da Computação em Nuvem. Adaptado de \cite{Zhang2010}}{arquitetura-computacao-nuvem}{width=0.9\textwidth}
+
+\begin{itemize}
+    \item \textbf{\acrfull{IaaS}:} fornece a capacidade de provisionar processamento, armazenamento, redes, incluir sistemas operacionais, serviços e aplicações. O cliente tem controle total da infraestrutura utilizando máquinas virtuais. A \acrshort{IaaS} pode escalar dinamicamente, aumentando ou diminuindo os recursos de acordo com as necessidades das aplicações. Os gastos das aplicações \acrshort{IaaS} estão diretamente vinculados ao consumo \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}. Exemplos de aplicações como \acrshort{IaaS}: máquinas virtuais presentes em provedores de computação em nuvem (\textit{Amazon AWS}, \textit{Microsoft Azure}, \textit{Google Cloud}, dentre outros);
+    \item \textbf{\acrfull{SaaS}:} fornece todas as funções de uma aplicação tradicional, mas por acesso via Internet. O cliente não tem controle na infraestrutura de servidores, rede, sistemas operacionais e armazenamento. O \acrshort{SaaS} elimina preocupações com servidores de aplicações, sistemas operacionais, armazenamento e desenvolvimento de aplicações. Os desenvolvedores concentram-se no desenvolvimento de aplicações e não na infraestrutura, permitindo o desenvolvimento rápido de sistemas de software. O \acrshort{SaaS} reduz os custos, pois é dispensada a aquisição de licenças de sistemas de software e os usuários usam o serviço sob demanda \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}. Exemplos de aplicações como \acrshort{SaaS}: \textit{Dropbox}, \textit{Google Docs}, \textit{Netflix}, \textit{Spotify}, dentre outras;
+    \item \textbf{\acrfull{PaaS}:} fornece um sistema operacional, linguagens de programação e ambientes de desenvolvimento para as aplicações, auxiliando o desenvolvimento de sistemas de software, que são suportadas pelo provedor de serviço de computação em nuvem. O cliente não tem controle na infraestrutura de servidores, rede, sistemas operacionais e armazenamento, mas tem controle sobre as aplicações enviadas e algumas configurações de ambiente que são disponibilizados pelos provedores de computação em nuvem. O modelo \acrshort{PaaS} possui as mesmas características do modelo \acrshort{SaaS} no desenvolvimento de aplicações \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}. Exemplos de aplicações como \acrshort{PaaS}: provedores de computação em nuvem (\textit{Amazon AWS}, \textit{Microsoft Azure}, \textit{Google Cloud}, dentre outros).
+\end{itemize}
+
+A empresa de consultoria \textit{Gartner} apresenta anualmente um relatório sobre os principais provedores de computação em nuvem. O quadrante mágico, representação gráfica desenvolvida pela \textit{Gartner} é dividido em 4 tópicos que definem: líderes, desafiadores, visionários e concorrentes de nicho de mercado. Em seu último relatório realizado no ano de 2018, a avaliação é orientada a  \acrshort{IaaS} com alguns recursos que podem ser classificados como \acrshort{PaaS} \cite{Gartner2018}. Não há relatórios específicos para os modelos de serviços \acrshort{SaaS} e \acrshort{PaaS}. A \refFig{gartner-iaas} apresenta os líderes mundiais de mercado em computação em nuvem.
+
+\figura[!ht]{fundamentacao/cloud_gartner.png}{Quadrante mágico para \acrshort{IaaS} em nuvem. Adaptado de \cite{Gartner2018}}{gartner-iaas}{width=0.8\textwidth}
+
+Além de prover modelos de serviços, a arquitetura da computação em nuvem provê modelos de implantação: público, privado, híbrido, comunidade e federado \cite{Buyya2009}, \cite{Buyya2010}. O modelo público é o modelo de implementação mais comum, e possui a estrutura de rede aberta para uso público. O cliente utiliza o serviço mediante pagamento, a ser definido de acordo com os serviços utilizados. O modelo privado possui estrutura de rede fechada. O cliente é responsável pelo controle interno de todos os serviços. O modelo híbrido é um meio termo entre o modelo privado e público. Os serviços utilizados pelo cliente podem estar tanto em uma nuvem privada, quanto em uma nuvem pública. O modelo em comunidade ocorre quando organizações constroem e compartilham, em conjunto, uma infraestrutura de nuvem. O modelo federado é um conjunto de provedores de nuvens públicos e privados \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}, \cite{Buyya2010}. Os modelos de implantação da computação em nuvem são:
+
+\begin{itemize}
+    \item \textbf{Público:} o modelo público permite o acesso dos usuários por meio de interfaces usando navegadores da Web. Os usuários precisam pagar apenas pelo tempo que utilizam o serviço, reduzindo os custos operacionais. No entanto, são menos seguras em comparação com outros modelos, pois todos os aplicativos e dados são mais propensos a ataques mal-intencionados. A solução para isso pode se dar nas verificações de segurança, a serem implementadas por meio de validação em ambos os lados, tanto pelo provedor de computação nuvem quanto pelo cliente;
+    \item \textbf{Privado:} o modelo privado permite que as operações em nuvem ocorram dentro do \textit{data center} de uma organização. Nesse modelo, é fácil gerenciar a segurança, a manutenção e as atualizações, além de fornecer mais controle sobre a implantação e o uso. A nuvem privada pode ser comparada à Intranet. Na nuvem privada, os serviços são reunidos e disponibilizados para os usuários no nível organizacional. Os recursos e aplicativos são gerenciados pela própria organização. A segurança é aprimorada, pois somente os usuários das organizações têm acesso à nuvem privada;
+    \item \textbf{Híbrido:} o modelo híbrido é uma combinação dos modelos público e privado. Neste modelo, uma nuvem privada está vinculada a um ou mais serviços de nuvem externos. Permite que uma organização atenda às suas necessidades na nuvem privada e, se alguma necessidade ocasional ocorrer, ele solicita à nuvem pública recursos computacionais;
+    \item \textbf{Comunidade:} o modelo em comunidade permite que organizações construam e compartilhem, em conjunto, uma infraestrutura de nuvem, seus requisitos e políticas. A infraestrutura da nuvem pode ser hospedada por um provedor terceirizado ou em uma das organizações da comunidade;
+    \item \textbf{Federado:} o modelo federado permite que múltiplos provedores de nuvem distintos tem seus serviços e recursos integrados para o usuário final de maneira transparente, oferecendo um maior poder de processamento e de armazenamento.
+\end{itemize}
+
+%----------- Conclusão -----------%
+
+Os provedores de computação em nuvem possuem \textit{data centers} espalhados em vários locais do mundo para fornecer redundância e confiabilidade em relação aos serviços estabelecidos. Independente da arquitetura de serviço utilizada ou modelo de implementação, os provedores de computação em nuvem devem garantir que sua infraestrutura seja segura e que os dados e aplicações de seus clientes sejam protegidos, enquanto o cliente deve tomar medidas para fortalecer suas aplicações. A redução de custos da computação em nuvem em relação à infraestrutura local é evidente, além de ser uma tecnologia importante para interoperabilidade, flexibilidade, escalabilidade e provisionamento rápido de aplicações \cite{Zhang2010}, \cite{Jadeja2012}, \cite{Puthal2015}.
+
+Neste trabalho, é utilizado o provedor de computação em nuvem \textit{Microsoft Azure} devido à sua representatividade no mercado de computação em nuvem, conforme apresentado na \refFig{gartner-iaas}, além de possuir serviços e ferramentas que facilitam a implementação da arquitetura proposta e por ser o provedor de computação em nuvem utilizado no estudo de caso aplicado neste trabalho. Na arquitetura proposta é utilizado o modelo de implementação público e o modelo de serviço \acrshort{PaaS}, em atenção ao menor custo de implementação e maior facilidade no desenvolvimento desse tipo de serviço.
+
+\section{Microsserviços}
+\label{sec:microsserviços}
+
+%-- Trabalhos - Microsserviços
+
+% Microservices - a definition of this new architectural - https://martinfowler.com/articles/microservices.html
+% Microservices: yesterday, today, and tomorrow
+% Increasing the Dependability of IoT Middleware with Cloud Computing and Microservices
+% Microservices Patterns: http://microservices.io/
+% Designing Distributed Systems - Patterns and Paradigms for Scalable, Reliable Services
+
+%----------- Introdução -----------%
+
+Microsserviços são estilos arquiteturais, inspirados nas práticas ágeis que surgiram na indústria de software, com o objetivo de aumentar a capacidade das equipes de desenvolvimento, de construir e manter grandes aplicações em ambientes corporativos. Neste estilo, uma aplicação é construída pela composição de vários microsserviços \cite{Dragoni2016}, \cite{Martins2017}. Um microsserviço é um serviço pequeno e autônomo, que se comunica através de uma infraestrutura de rede e protocolos. Para um microsserviço ser considerado pequeno e autônomo, deve ter uma única responsabilidade e possuir sua própria infraestrutura, que é independente dos outros microsserviços no qual está relacionado \cite{Lewis2014}, \cite{Martins2017}.
+
+Microsserviços gerenciam a complexidade crescente decompondo funcionalmente dos grandes sistemas em um conjunto de serviços independentes. Ao tornar os serviços completamente independentes em desenvolvimento e implantação, os microsserviços enfatizam o baixo acoplamento e a alta coesão, levando a modularidade dos microsserviços implementados. Essa abordagem oferece todos os tipos de benefícios em termos de capacidade de manutenção, escalabilidade, flexibilidade, modularidade, entre outros \cite{Dragoni2016}. As principais características de um microsserviço são \cite{Dragoni2016}:
+
+\begin{itemize}
+    \item \textbf{Tamanho:} o tamanho é comparativamente pequeno. Um serviço típico, apoiando a crença de que o projeto arquitetônico de um sistema é altamente dependente do projeto estrutural da organização que o produz. O uso idiomático da arquitetura de microsserviços sugere que, se um serviço for muito grande, ele deve ser dividido em dois ou mais serviços, preservando assim a granularidade e mantendo o foco em fornecer apenas uma única capacidade de negócio;
+    \item \textbf{Contexto delimitado:} as funcionalidades relacionadas são combinadas em um único recurso de negócio, que é então implementado como um serviço;
+    \item \textbf{Independência:} cada serviço na arquitetura de microsserviço é operacionalmente independente de outros serviços e a única forma de comunicação entre os serviços é por meio de suas interfaces publicadas.
+\end{itemize}
+
+Para um microsserviço ser pequeno, autônomo e com responsabilidade única, o conceito de contextos delimitados foi importado do padrão arquitetural \acrfull{DDD} onde as funções de negócio de um serviço devem ser construídas e executadas independente de outros serviços \cite{Richardson2016}. As principais características de sistema arquitetado com microsserviços são \cite{Dragoni2016}:
+
+\begin{itemize}
+    \item \textbf{Disponibilidade:} a disponibilidade é uma grande preocupação em microsserviços, pois afeta diretamente o sucesso de um sistema. Dada independência dos serviços, toda a disponibilidade do sistema pode ser estimada em termos da disponibilidade dos serviços individuais que compõem o sistema. Mesmo que um único serviço não esteja disponível para atender a uma solicitação, todo o sistema pode ficar comprometido e sofrer consequências diretas. Se levarmos a implementação do serviço, quanto mais um componente propenso a falhas for, mais frequentemente o sistema sofrerá falhas. Os microsserviços devem ser impedidos de se tornar excessivamente complexos, refinando-os em dois ou mais serviços diferentes. Gerar um número crescente de serviços tornará o sistema propenso a falhas no nível de integração, o que resultará em menor disponibilidade devido à grande complexidade associada à disponibilização instantânea de dezenas de serviços;
+    \item \textbf{Confiabilidade:} construir o sistema a partir de componentes pequenos e simples também é uma das regras, que afirma que, para alcançar maior confiabilidade, é preciso encontrar uma maneira de gerenciar as complexidades de um sistema grande. A maior ameaça à confiabilidade de microsserviços está nos mecanismos de integração. A confiabilidade de microsserviços é inferior aos sistemas que usam chamadas na memória ao invés de chamadas através da rede. Essa desvantagem não é exclusiva apenas dos microsserviços e pode ser encontrada em qualquer sistema distribuído; 
+    \item \textbf{Manutenção:} por definição, a arquitetura de microsserviços é fracamente acoplada, o que significa que existe um pequeno número de integrações entre serviços. Isso contribui muito para a manutenção de um sistema, minimizando os custos de modificações de serviços, corrigindo erros ou adicionando novas funcionalidades.
+    \item \textbf{Desempenho:} o fator proeminente que afeta negativamente o desempenho na arquitetura de microsserviços é a comunicação em uma rede. A latência da rede é muito maior que a da memória. As chamadas na memória são muito mais rápidas para serem concluídas do que o envio de mensagens pela rede. Em termos de comunicação, o desempenho será degradado em comparação com sistemas que usam mecanismos de chamada de memória. As restrições que os microsserviços dão ao tamanho dos serviços também contribuem indiretamente para esse fator. Em arquiteturas mais gerais sem restrições relacionadas ao tamanho, a proporção de chamadas na memória para o número total de chamadas é maior do que na arquitetura de microsserviços, o que resulta em menos comunicação na rede. Assim, a quantidade exata de degradação do desempenho também dependerá da interconectividade do sistema. Dessa forma, sistemas com contextos bem delimitados sofrerão menos degradação, devido ao acoplamento mais flexível e à menor quantidade de mensagens enviadas;
+    \item \textbf{Segurança:} os microsserviços sofrem vulnerabilidades de segurança. Como os microsserviços usam o mecanismo \acrshort{REST} e o \acrshort{XML} com \acrshort{JSON} como principais formatos de troca de dados, uma atenção especial deve ser dada ao fornecimento de segurança dos dados que estão sendo transferidos. Isso significa adicionar mais sobrecarga ao sistema em termos de funcionalidade adicional de criptografia. Os microsserviços promovem a reutilização de serviços e, como tal, é natural supor que alguns sistemas incluirão serviços de terceiros. Portanto, um desafio adicional é fornecer mecanismos de autenticação com serviços de terceiros e garantir que os dados enviados sejam armazenados de forma segura. Em resumo, a segurança de microsserviços é afetada de maneira bastante negativa porque é necessário considerar e implementar mecanismos de segurança adicionais para fornecer a funcionalidade de segurança adicional mencionada acima;
+    \item \textbf{Testabilidade:} como todos os componentes em uma arquitetura de microsserviços são independentes, cada componente pode ser testado isoladamente, o que melhora significativamente a testabilidade do componente. Com microsserviços, é possível isolar partes do sistema que sofreram alterações e partições que foram afetadas pela mudança e que as consideraram independentemente do resto do sistema. O teste de integração, por outro lado, pode se tornar muito complicado, especialmente quando o sistema que está sendo testado é muito grande e há muitas conexões entre os componentes. É possível testar cada serviço individualmente, mas as anomalias podem emergir da colaboração de vários serviços.
+\end{itemize}
+
+A integração de um sistema arquitetado com microsserviços acontece por meio de padrões de projeto como: \textit{\acrshort{API} Gateway} e \textit{Backend por front-end} para comunicação externa entre serviços, mensageria para o uso mensagens assíncronas para comunicação interna entre serviços, entre outros padrões de projeto \cite{Richardson2016}.
+
+Como cada microsserviço pode representar um único recurso de negócio que é entregue e atualizado de forma independente, descobrir um erro e/ou alguma melhoria não causará impacto em outros serviços e em seu desenvolvimento (desde que a compatibilidade com versões anteriores seja preservada e a interface de serviço permaneça inalterada) \cite{Dragoni2016}. No entanto, para aproveitar verdadeiramente o poder da implantação independente, é preciso utilizar mecanismos de integração e entrega contínua. Os microsserviços são a primeira arquitetura desenvolvida na era de \textit{DevOps}, essencialmente, os microsserviços devem ser usados com entrega contínua e integração contínua, tornando cada estágio do \textit{pipeline} de entrega automático. Ao usar \textit{pipelines} automatizados de entrega contínua e modernas ferramentas de \textit{container}, por exemplo, é possível implantar uma versão atualizada de um serviço para produção em questão de segundos, o que prova ser muito benéfico em ambientes de negócios em constante mudança \cite{Dragoni2016}.
+
+%----------- Arquitetura -----------%
+
+Os microsserviços estão em contraste com os sistemas monolíticos, que tendem a colocar toda a funcionalidade de um serviço em um aplicativo único e bem coordenado \cite{Burns2018DesigningServices}. A abordagem monolítica e de microsserviços são apresenta na \refFig{arquitetura-monolitica-definicao} e \refFig{arquitetura-microsservicos-definicao}.
+
+\figura[!ht]{fundamentacao/arquitetura_monolitica_definicao.png}{Arquitetura monolítica com todas as funções em um único sistema. Adaptado de \cite{Burns2018DesigningServices}}{arquitetura-monolitica-definicao}{width=0.6\textwidth}
+
+\figura[!ht]{fundamentacao/arquitetura_microsservicos_definicao.png}{Arquitetura de microsserviços com cada função dividida em um microsserviço separado. Adaptado de \cite{Burns2018DesigningServices}}{arquitetura-microsservicos-definicao}{width=0.6\textwidth}
+
+Em uma aplicação monolítica, uma aplicação de \textit{software} não pode ser executada de forma independente. O \textit{software} é construído com o mesmo conjunto de tecnologia e infraestrutura. Um grande problema nesse estilo arquitetural é a adição ou atualização de linguagens de programação, \textit{framework}, banco de dados ou infraestrutura que afeta toda a construção da aplicação \cite{Burns2018DesigningServices}, \cite{Dragoni2016}, \cite{Martins2017}.
+ 
+O desacoplamento de microsserviços permite um melhor dimensionamento. Como cada componente foi dividido em seu próprio serviço, ele pode ser dimensionado de forma independente. É raro que cada serviço dentro de um aplicativo maior cresça na mesma taxa ou tenha a mesma forma de dimensionamento. Alguns sistemas são sem estado e podem simplesmente escalar horizontalmente, enquanto outros sistemas mantêm o estado e exigem \textit{sharding} ou outras abordagens para escalar. Na separação, cada serviço pode usar a abordagem de dimensionamento mais adequada. Mas isso não é possível quando todos os serviços fazem parte de um único monolito \cite{Burns2018DesigningServices}.
+ 
+Os Microsserviços possuem uma separação clara de todos os componentes de uma aplicação de \textit{software}, diferente do monolítico, que centraliza todos os componentes. Cada microsserviço tem sua própria infraestrutura e definição de negócio bem definida, podendo ser compartilhada entre outros serviços. Uma aplicação de \textit{software} é construída pela decomposição de vários microsserviços. O desenvolvimento de microsserviços além de ser importante para o conhecimento dos contextos delimitados de uma aplicação, facilita a manutenção e o provisionamento rápido de aplicações \cite{Burns2018DesigningServices}.
+
+%----------- Conclusão -----------%
+
+A mudança para microsserviços é uma questão sensível para várias empresas envolvidas em uma grande refatoração de seus sistemas \textit{back-end} \cite{Dragoni2016}. Também há desvantagens na abordagem de microsserviços para o design do sistema. As duas principais desvantagens são que, como o sistema se tornou mais fracamente acoplado, depurar o sistema quando ocorrem falhas é significativamente mais difícil. Não se pode mais simplesmente carregar um único aplicativo em um depurador e determinar o que deu errado. Quaisquer erros são os subprodutos de um grande número de sistemas, muitas vezes em execução em máquinas diferentes. Esse ambiente é bastante desafiador para reproduzir em um depurador \cite{Burns2018DesigningServices}.
+
+Os sistemas baseados em microsserviços também são difíceis de projetar e arquitetar. Um sistema baseado em microsserviços usa vários métodos de comunicação entre serviços, padrões diferentes (por exemplo, síncrono, assíncrono, mensageria, etc.) e múltiplos padrões diferentes de coordenação e controle entre os serviços. Esses desafios são a motivação para padrões distribuídos. Se uma arquitetura de microsserviços é composta de padrões conhecidos, é mais fácil projetar, porque muitas das práticas de projeto são especificadas pelos padrões. Além disso, os padrões facilitam a depuração dos sistemas, pois permitem que os desenvolvedores apliquem as lições aprendidas em vários sistemas diferentes que usam os mesmos padrões \cite{Burns2018DesigningServices}.
+
+Neste trabalho, o estilo arquitetural de microsserviços é utilizado para substituir a arquitetura monolítica presente no estudo de caso aplicado neste trabalho, separando os contextos delimitados na arquitetura proposta com o uso do padrão arquitetural \acrfull{DDD} \cite{Richardson2016}, além de facilitar a integração com a computação nuvem devido aos serviços descentralizados presentes no estilo arquitetural de microsserviços. \textit{Pipelines} de integração e entrega contínua \cite{Dragoni2016} é utilizado para automatizar publicações de serviços. Na arquitetura proposta são utilizados os principais padrões de projeto nesse tipo de arquitetura: \textit{API Gateway}, para comunicação externa entre serviços e mensageria, para o uso mensagens de assíncronas para comunicação interna entre serviços.
+
+\section{Trabalhos Relacionados}
+\label{sec:trabalhos-relacionados}
+
+%-- Trabalhos - Trabalhos Relacionados
+
+% Microservices - a definition of this new architectural - https://martinfowler.com/articles/microservices.html
+% Microservices: yesterday, today, and tomorrow
+% Increasing the Dependability of IoT Middleware with Cloud Computing and Microservices
+% Microservices Patterns: http://microservices.io/
+% IoT architecture to enable intercommunication through REST API and UPnP using IP, ZigBee and arduino
+% A ubiquitous communication architecture integrating transparent UPnP and REST APIs
+% RFID-based smart parking management system
+% A trial of yoking-proof protocol in RFID-based smart-home environment
+% 6lo-RFID: A framework for full integration of smart UHF RFID tags into the internet of things
+% An integrated system of applying the use of Internet of Things, RFID and cloud computing: A case study of logistic management of Electricity Generation Authority of Thailand (EGAT) Mae Mao Lignite Coal Mining, Lampang, Thailand
+
+No trabalho de Rayes \cite{Rayes2017} é afirmada a importância da arquitetura em \acrshort{IoT} para gerenciar a complexidade de dispositivos inteligentes interconectados com sensores. A computação em nuvem permite provisionar serviços rapidamente, assim como garante alta disponibilidade e extensibilidade, importantes para gerenciar a complexidade de uma arquitetura de \acrshort{IoT} \cite{Sun2017}, \cite{Botta2014}. 
+
+Martins et al. \cite{Martins2017} apresenta a arquitetura em \acrshort{IoT} utilizando computação em nuvem e microsserviços para disponibilização dos dados processados de um dispositivo \acrshort{IoT} por intermédio do estilo arquitetural \acrshort{REST} e arquitetura de microsserviços. Os trabalhos de Sun \cite{Sun2017}, Vresk \cite{Vresk2016}, Celesti et al. \cite{Celesti2017} e Vandikas \cite{Vandikas2017} apresentam a arquitetura em \acrshort{IoT} utilizando computação em nuvem e microsserviços. Os trabalhos demonstram como as características da computação em nuvem e de microsserviços se completam na criação de arquiteturas que utilizam \acrshort{IoT}. 
+
+As características de microsserviços facilitam a comunicação e integração com dispositivos de \acrshort{IoT} \cite{Dragoni2016}, \cite{Lewis2014}, \cite{Richardson2016}. Os trabalhos de Ferreira apresentam arquiteturas em \acrshort{IoT} utilizando serviços no estilo arquitetural \acrshort{REST} por sua facilidade de comunicação com dispositivos \acrshort{IoT} \cite{Ferreira2013IoTArduino}, \cite{Ferreira2014AAPIs}.
+
+Tsiropoulou et al. \cite{Tsiropoulou2017RFID-basedSystem} apresenta a comunicação com tag \acrshort{RFID} passiva, dentro do contexto de um sistema de estacionamento inteligente e aplicando maior eficiência energética e operacional. Para aplicar a minimização de potência de transmissão do roteamento do leitor \acrshort{RFID} com junto com a tag \acrshort{RFID} passiva, é utilizado o paradigma de comunicação \textit{tag-to-tag}. A comunicação \textit{tag-to-tag} em redes \acrshort{RFID} passivas difere fundamentalmente das redes \textit{multi-hop} tradicionais devido à característica de reflexão de energia pelas tags \acrshort{RFID} passivas e não à retransmissão da potência original recebida.
+
+Os trabalhos de Prudanov et al. \cite{Prudanov2016}, Farris et al. \cite{Farris2017} e Chiochan \cite{Chieochan2017} apresentam arquiteturas de leitura de tags \acrshort{RFID} de \acrshort{UHF} utilizando \acrshort{IoT}. Prudanov et al. \cite{Prudanov2016} apresenta uma arquitetura de leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} e \acrshort{IoT}. A arquitetura proposta utiliza um leitor \acrshort{IoT} para leitura de tags \acrshort{RFID} de baixo custo \textit{Cottonwood}. Um microcomputador \textit{Raspberry Pi 3} é responsável pelo processamento das tags lidas pelo dispositivo \acrshort{IoT}. A arquitetura proposta implementa autenticações de segurança na aplicação, a fim de aplicar confidencialidade nos dados.
+
+Farris et al. \cite{Farris2017} apresenta uma arquitetura de leitura e escrita de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} e \acrshort{IoT} em um ambiente com comunicação via protocolo de comunicação IPV6. A arquitetura proposta utiliza um leitor \acrshort{IoT} para leitura e gravação de tags \acrshort{RFID} comercial de baixo custo \textit{ThingMagic Micro Embedded}. As informações de leitura ou gravação de tags são enviadas para um servidor local utilizando comunicação serial.
+
+Chieochan \cite{Chieochan2017} demonstra uma arquitetura de leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF}, \acrshort{IoT} e computação em nuvem. O modelo de implantação e o modelo de serviço de computação em nuvem não é informado no trabalho. A arquitetura proposta utiliza um leitor de tags \acrshort{RFID} comercial de alto custo e um microcontrolador para realizar o processamento das tags lidas que são enviadas para um servidor local. A conexão entre o microcontrolador e o leitor de tags \acrshort{RFID} é realizada a partir da comunicação serial utilizando um \textit{hardware} \acrshort{UART}. O \acrshort{SGBD} MariaDB é responsável pelo armazenamento das informações no formato \acrshort{JSON}. É utilizada computação em nuvem através do modelo de nuvem privada, que é responsável por armazenar as informações presentes no banco de dados e hospedar a aplicação Web responsável por apresentar os resultados. A utilização de \textit{hardware} de baixo custo em \acrshort{IoT} é fundamental para diminuição do custo de implementação de arquiteturas em \acrshort{IoT} complexas. Há diversos dispositivos de \acrshort{IoT} que possuem um preço de mercado acessível para empresas de pequeno porte e/ou usuários comuns.
+
+As arquiteturas em \acrshort{IoT} de leitura de tags \acrshort{RFID} utilizando a frequência \acrshort{UHF} apresentadas possuem características em comum, principalmente em termos de comunicação e integração entre os dispositivos \acrshort{IoT} e as aplicações. Em sua maioria, as arquiteturas em \acrshort{IoT} fazem uso da comunicação entre serviços utilizando o estilo arquitetural \acrshort{REST} com retorno da resposta dos serviços no formato \acrshort{JSON}, assim como um \acrshort{SGBD} com suporte a essa tecnologia.
+
+\section{Discussão de Implementação Proposta}
+\label{sec:discussao}
+
+Diferentemente das arquiteturas em \acrshort{IoT} de leitura de tags \acrshort{RFID} de \acrshort{UHF} apresentadas, a arquitetura proposta neste trabalho faz uso de microsserviços com o uso de computação em nuvem, em virtude das características já apresentadas, como vantagens na implementação em relação a arquitetura monolítica, bem como serviços e ferramentas da computação em nuvem que facilitam a implementação e o provisionamento da arquitetura proposta.
+
+Neste trabalho, é utilizado o provedor de computação em nuvem \textit{Microsoft Azure}, em razação da sua representatividade no mercado de computação em nuvem além de possuir serviços e ferramentas que facilitam a implementação da arquitetura proposta e ser o provedor de computação em nuvem utilizado no estudo de caso aplicado neste trabalho.
+
+A utilização do modelo de implementação público e o modelo de serviço \acrshort{PaaS} diminuem o custo de implementação e facilitam o desenvolvimento da arquitetura proposta. O modelo de implementação público facilita a implementação por ser um modelo que não necessita de nenhum tipo de configuração interna ou externa, apenas o uso do navegador Web para acessar os serviços e ferramentas disponíveis na nuvem. O custo de implementação é menor, pois a utilização de serviços e ferramentas só ocorre quando há o consumo, tornando desnecessários os gastos com a não utilização de serviços e ferramentas.
+
+Essas características são essenciais para o gerenciamento de grandes arquiteturas em \acrlong{IoT}, devido à escalabilidade e provisionamento rápido da arquitetura proposta no ambiente de computação em nuvem \cite{Khazaei2017End-to-endApplications}, assim como o gerenciamento do grande volume de dados que podem ser gerados na leitura de tags \acrshort{RFID}, com a utilização da frequência \acrshort{UHF}, aproximadamente 100 tags lidas por segundo. A utilização de um banco de dados \acrshort{NoSQL} é importante para a quantidade de informações que podem ser geradas na leitura de tags \acrshort{RFID}, pela quantidade de registros que podem ser inseridos e pela baixa latência presente nesse tipo de banco de dados \cite{Dias2018NoSQLStudy}.
+
+A utilização da tecnologia de \textit{containers} \textit{Docker} \cite{Vandikas2017}, \cite{Khazaei2017End-to-endApplications} facilita a integração entre microsserviços e a computação em nuvem, além de ser possível utilizar outros tipos de provedores de computação em nuvem que aceitam esse tipo de tecnologia \cite{Vandikas2017}, \cite{Khazaei2017End-to-endApplications}.
+
+Por fim, as arquiteturas apresentadas não apresentam implementações para o monitoramento do \textit{hardware} \acrshort{IoT}. A arquitetura proposta neste trabalho apresenta o monitoramento do dispositivo \acrshort{IoT} assim como o monitoramento dos microsserviços implementados.

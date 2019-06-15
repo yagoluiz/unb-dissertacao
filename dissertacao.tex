@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Classe do documento
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Opções:
+%  - Graduação: bacharelado|engenharia|licenciatura
+%  - Pós-graduação: [qualificacao], mestrado|doutorado, ppca|ppginf
+
+% \documentclass[engenharia]{UnB-CIC}%
+\documentclass[mestrado,ppca]{UnB-CIC}%
+
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{soul,color}
+\usepackage{pdfpages}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{bookmark}
+\usepackage{listingsutf8}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usemintedstyle{vs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cores - Código fonte
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{orangestrings}{rgb}{0.6,0.3,0}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{blue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{orangestrings},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstdefinelanguage{docker}{
+  keywords={FROM, RUN, COPY, ADD, ENTRYPOINT, CMD,  ENV, ARG, WORKDIR, EXPOSE, LABEL, USER, VOLUME, STOPSIGNAL, ONBUILD, MAINTAINER},
+  keywordstyle=\color{blue}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinelanguage{docker-compose}{
+  keywords={image, environment, ports, container_name, ports, volumes, links},
+  keywordstyle=\color{blue}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinelanguage{docker-compose-2}{
+  keywords={version, volumes, services},
+  keywordstyle=\color{blue}\bfseries,
+  keywords=[2]{image, environment, ports, container_name, ports, links, build},
+  keywordstyle=[2]\color{olive}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{style=mystyle}
+
+% Renomeando: Listing -> Código Fonte
+\renewcommand{\lstlistingname}{Código Fonte}
+% Renomeando: Listings -> Lista de Códigos Fontes
+\renewcommand{\lstlistlistingname}{Lista de Códigos Fontes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Informações do Trabalho
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\orientador[a]{\prof \dr[a] Edna Dias Canedo}{CIC/UnB}%
+%\coorientador{\prof \dr José Ralha}{CIC/UnB}
+\coordenador[a]{\prof[a] \dr[a] Aleteia Patrícia Favacho de Araújo}{Universidade de Brasília}%
+\diamesano{06}{Junho}{2019}%
+
+\membrobanca{\prof \dr Rodrigo Bonif\'{a}cio de Almeida}{CIC/UnB}%
+\membrobanca{\dr Robson de Oliveira Albuquerque}{CEPESC}%
+
+\autor{Yago Luiz}{dos Santos}%
+
+\titulo{Implementação de Arquitetura Baseada em IoT para Leitura de Tags RFID de Ultra Alta Frequência}
+
+\palavraschave{Internet das Coisas (IoT), Identificação por Radiofrequência (RFID), Arquitetura de Software, Computação em Nuvem, Microsserviços.}%
+
+\keywords{Internet of Things (IoT), Radio-Frequency Identification (RFID), Software Architecture, Cloud Computing, Microservices.}%
+
+\newcommand{\unbcic}{\texttt{UnB-CIC}}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Texto
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}%
+    \capitulo{1_Introducao}{Introdução}%
+    \capitulo{2_Fundamentacao}{Fundamentação Teórica}%
+    \capitulo{3_Implementacao}{Implementação Proposta}%
+    %\capitulo{4_Cronograma}{Cronograma de Desenvolvimento}%
+    \capitulo{4_Estudo_Caso}{Estudo de Caso}%
+ 	\capitulo{5_Conclusao}{Conclusão}%
+ 	\apendice{Apendice}{Códigos Fontes}%
+ \end{document}%
