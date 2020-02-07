@@ -11,6 +11,9 @@ Internet das Coisas envolve um número crescente de dispositivos inteligentes in
 Publicado no *journal* **MDPI - Information** em 2019. 
 - [On the Design and Implementation of an IoT based Architecture for Reading Ultra High Frequency Tags](https://www.mdpi.com/2078-2489/10/2/41)
 
+# Repositório Oficial
+[Repositório UnB](https://repositorio.unb.br/handle/10482/36035)
+
 # Projeto
 Consulte os repositórios abaixo para mais detalhes sobre a implementação:
 
