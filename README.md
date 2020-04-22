@@ -20,3 +20,4 @@ Consulte os repositórios abaixo para mais detalhes sobre a implementação:
 - [Middleware IoT de Leitura de Tags RFID](https://github.com/yagoluiz/rfid-reader-middleware)
 - [Arquitetura de Serviços (microsserviços, mensageria e API Gateway)](https://github.com/yagoluiz/rfid-reader-api)
 - [Aplicação front-end](https://github.com/yagoluiz/rfid-reader-web)
+- [Infraestrutura em Nuvem](https://github.com/yagoluiz/rfid-reader-infra)
